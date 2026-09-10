@@ -1,0 +1,14 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+
+spring:
+  application:
+    name: roc-api
+
+smile:
+  datasource:
+    jdbc-url: ${SMILE_DB_URL:jdbc:sqlserver://localhost:14330;databaseName=SMILE_FO;encrypt=true;trustServerCertificate=true}
+    username: ${SMILE_DB_USER:smile_dev}
+    password: ${SMILE_DB_PASSWORD:l@cNinh2026}
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
