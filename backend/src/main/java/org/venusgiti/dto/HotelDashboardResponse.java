@@ -14,7 +14,8 @@ public record HotelDashboardResponse(
             int totalRooms,
             int occupiedRooms,
             int availableRooms,
-            int outOfOrderRooms
+            int outOfOrderRooms,
+            BigDecimal occupancyPercent
     ) {}
 
     public record GuestFlow(
@@ -26,8 +27,19 @@ public record HotelDashboardResponse(
     ) {}
 
     public record Revenue(
-            BigDecimal roomRevenue,
-            BigDecimal totalRevenue,
+            BigDecimal roomGrossRevenue,
+            BigDecimal roomNetRevenue,
+
+            BigDecimal foodBeverageRevenue,
+            BigDecimal onsenRevenue,
+            BigDecimal otherRevenue,
+
+            BigDecimal totalGrossRevenue,
+            BigDecimal totalNetRevenue,
+
+            BigDecimal serviceCharge,
+            BigDecimal tax,
+
             BigDecimal adr,
             BigDecimal revPar
     ) {}
@@ -35,6 +47,9 @@ public record HotelDashboardResponse(
     public record Housekeeping(
             int clean,
             int dirty,
-            int inspected
+            int inspected,
+            boolean live
     ) {}
+
+
 }

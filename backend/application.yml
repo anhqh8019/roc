@@ -8,6 +8,21 @@ spring:
 smile:
   datasource:
     jdbc-url: ${SMILE_DB_URL:jdbc:sqlserver://localhost:14330;databaseName=SMILE_FO;encrypt=true;trustServerCertificate=true}
-    username: ${SMILE_DB_USER:smile_dev}
-    password: ${SMILE_DB_PASSWORD:l@cNinh2026}
+    username: ${SMILE_DB_USER:roc_dev}
+    password: ${SMILE_DB_PASSWORD:Venusgiti@2026}
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+
+    maximum-pool-size: 10
+    minimum-idle: 2
+
+    connection-timeout: 30000
+    validation-timeout: 5000
+
+    idle-timeout: 300000
+    max-lifetime: 900000
+    keepalive-time: 120000
+
+
+logging:
+  level:
+    org.springframework.jdbc.core: INFO

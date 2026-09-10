@@ -17,7 +17,7 @@ public class SmileDataSourceConfig {
     @ConfigurationProperties(
             prefix = "smile.datasource"
     )
-    public DataSource smileDataSource() {
+    public HikariDataSource  smileDataSource() {
 
         return DataSourceBuilder
                 .create()
