@@ -1,14 +1,48 @@
 server:
-  port: ${SERVER_PORT:8080}
-
+  port: ${SERVER_PORT:8088}
 
 spring:
   application:
-    name: roc-api
+    name: resoft-operation-center
 
 smile:
   datasource:
-    jdbc-url: ${SMILE_DB_URL:jdbc:sqlserver://localhost:14330;databaseName=SMILE_FO;encrypt=true;trustServerCertificate=true}
-    username: ${SMILE_DB_USER:smile_dev}
-    password: ${SMILE_DB_PASSWORD:l@cNinh2026}
+    jdbc-url: ${SMILE_DB_URL:jdbc:sqlserver://172.16.40.230:1433;databaseName=SMILE_FO;encrypt=true;trustServerCertificate=true}
+    username: ${SMILE_DB_USER}
+    password: ${SMILE_DB_PASSWORD}
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+
+    maximum-pool-size: 10
+    minimum-idle: 2
+
+    connection-timeout: 30000
+    validation-timeout: 5000
+
+    idle-timeout: 300000
+    max-lifetime: 900000
+    keepalive-time: 120000
+
+roc:
+  datasource:
+    url: ${ROC_DB_URL:jdbc:sqlserver://172.16.40.230:1433;databaseName=ROC_DB;encrypt=true;trustServerCertificate=true}
+    username: ${ROC_DB_USER}
+    password: ${ROC_DB_PASSWORD}
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 1
+      connection-timeout: 30000
+      validation-timeout: 5000
+      idle-timeout: 300000
+      max-lifetime: 900000
+      keepalive-time: 120000
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration-ms: ${JWT_EXPIRATION_MS}
+
+
+logging:
+  level:
+    org.springframework.jdbc.core: INFO

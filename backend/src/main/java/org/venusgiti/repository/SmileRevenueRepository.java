@@ -1,6 +1,7 @@
 package org.venusgiti.repository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -10,10 +11,16 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-@RequiredArgsConstructor
 public class SmileRevenueRepository {
 
     private final NamedParameterJdbcTemplate jdbc;
+
+    public SmileRevenueRepository(
+            @Qualifier("smileJdbcTemplate")
+            NamedParameterJdbcTemplate jdbc
+    ) {
+        this.jdbc = jdbc;
+    }
 
     public BigDecimal getRoomRevenue(LocalDate date) {
 

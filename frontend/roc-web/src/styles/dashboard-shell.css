@@ -1,0 +1,1459 @@
+/* =========================================================
+   GLOBAL
+   ========================================================= */
+
+:root {
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  background: #07111f;
+  color: #e5edf7;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  background: #07111f;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+
+/* =========================================================
+   APPLICATION SHELL
+   ========================================================= */
+
+.app-shell {
+  width: 100%;
+  min-height: 100vh;
+
+  display: flex;
+
+  background: #07111f;
+}
+
+.app-main {
+  flex: 1;
+
+  min-width: 0;
+  min-height: 100vh;
+
+  margin-left: 0;
+
+  background: #07111f;
+}
+
+
+/* =========================================================
+   SIDEBAR
+   ========================================================= */
+
+.sidebar {
+  width: 220px;
+  flex: 0 0 220px;
+
+  height: 100vh;
+
+  position: sticky;
+  top: 0;
+
+  overflow-y: auto;
+
+  background: #06101c;
+
+  border-right: 1px solid #17324a;
+
+  z-index: 20;
+}
+
+.sidebar-brand {
+  padding: 20px 18px;
+
+  border-bottom: 1px solid #17324a;
+}
+
+.brand-logo {
+  font-size: 22px;
+  font-weight: 800;
+
+  letter-spacing: 1px;
+
+  color: #2bb7ff;
+}
+
+.brand-subtitle {
+  margin-top: 2px;
+
+  font-size: 10px;
+
+  color: #7089a2;
+}
+
+.sidebar-nav {
+  padding: 12px 8px 24px;
+}
+
+.sidebar-item {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  margin-bottom: 4px;
+
+  padding: 10px 12px;
+
+  border: 0;
+  border-radius: 7px;
+
+  background: transparent;
+
+  color: #8ea1b7;
+
+  cursor: pointer;
+
+  text-align: left;
+
+  font-size: 13px;
+
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.sidebar-item:hover {
+  background: #0d2032;
+
+  color: #ffffff;
+}
+
+.sidebar-item.active {
+  background: #087dd8;
+
+  color: #ffffff;
+
+  box-shadow:
+    0 4px 12px rgba(8, 125, 216, 0.18);
+}
+
+.sidebar-icon {
+  flex: 0 0 auto;
+
+  color: currentColor;
+
+  opacity: 0.9;
+}
+
+.sidebar-label {
+  overflow: hidden;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   ROC TOP HEADER
+   ========================================================= */
+
+.roc-top-header {
+  width: 100%;
+  height: 62px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 18px;
+
+  padding: 0 22px;
+
+  background: #071827;
+
+  border-bottom: 1px solid #16364a;
+
+  color: #ffffff;
+}
+
+
+/* =========================================================
+   HEADER LEFT
+   ========================================================= */
+
+.roc-header-left {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.roc-header-title {
+  font-size: 14px;
+  font-weight: 600;
+
+  line-height: 1.2;
+
+  color: #eef5fa;
+}
+
+.roc-header-resort {
+  margin-top: 5px;
+
+  font-size: 11px;
+  font-weight: 400;
+
+  line-height: 1;
+
+  color: #8ba0b2;
+}
+
+
+/* =========================================================
+   HEADER RIGHT
+   ========================================================= */
+
+.roc-header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 13px;
+
+  margin-left: auto;
+}
+
+
+/* =========================================================
+   BUSINESS DATE
+   ========================================================= */
+
+.roc-business-date {
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+
+  overflow: hidden;
+
+  border: 1px solid #1b4560;
+  border-radius: 5px;
+
+  background: #0a2334;
+}
+
+.roc-business-date span {
+  padding-left: 10px;
+  padding-right: 6px;
+
+  white-space: nowrap;
+
+  font-size: 9px;
+  font-weight: 500;
+
+  color: #8ba6b9;
+}
+
+.roc-business-date input {
+  width: 118px;
+  height: 100%;
+
+  padding: 0 7px;
+
+  border: 0;
+  outline: none;
+
+  background: #0d2a3e;
+
+  color: #eaf2f8;
+
+  font-size: 10px;
+
+  color-scheme: dark;
+}
+
+.roc-business-date input::-webkit-calendar-picker-indicator {
+  opacity: 0.75;
+
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   HEADER SEPARATOR
+   ========================================================= */
+
+.roc-header-separator {
+  width: 1px;
+  height: 28px;
+
+  background: #18394e;
+}
+
+
+/* =========================================================
+   HEADER USER
+   ========================================================= */
+
+.roc-user-wrapper {
+  position: relative;
+}
+
+.roc-user-button {
+  min-width: 190px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  padding: 0 6px;
+
+  border: 0;
+  border-radius: 6px;
+
+  background: transparent;
+
+  cursor: pointer;
+
+  text-align: left;
+
+  transition:
+    background 0.15s ease;
+}
+
+.roc-user-button:hover {
+  background: #0d2638;
+}
+
+.roc-user-avatar {
+  width: 30px;
+  height: 30px;
+
+  flex: 0 0 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background:
+    linear-gradient(
+      135deg,
+      #168bf2,
+      #0d67ac
+    );
+
+  color: #ffffff;
+
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.roc-user-text {
+  flex: 1;
+
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  gap: 2px;
+}
+
+.roc-user-text strong {
+  overflow: hidden;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  color: #e8f1f7;
+
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.roc-user-text span {
+  color: #687f92;
+
+  font-size: 7px;
+}
+
+.roc-user-chevron {
+  margin-right: 2px;
+
+  color: #547187;
+
+  font-size: 9px;
+
+  transition:
+    transform 0.15s ease;
+}
+
+.roc-user-chevron.open {
+  transform: rotate(180deg);
+}
+
+
+/* =========================================================
+   USER DROPDOWN
+   ========================================================= */
+
+.roc-user-menu {
+  position: absolute;
+
+  top: calc(100% + 7px);
+  right: 0;
+
+  z-index: 1000;
+
+  width: 220px;
+
+  padding: 8px;
+
+  border: 1px solid #1b425b;
+  border-radius: 7px;
+
+  background: #091b29;
+
+  box-shadow:
+    0 14px 35px rgba(0, 0, 0, 0.45);
+}
+
+.roc-menu-profile {
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  padding: 8px;
+}
+
+.roc-menu-avatar {
+  width: 34px;
+  height: 34px;
+
+  flex: 0 0 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background:
+    linear-gradient(
+      135deg,
+      #168bf2,
+      #0d67ac
+    );
+
+  color: #ffffff;
+
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.roc-menu-profile > div:last-child {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+.roc-menu-profile strong {
+  overflow: hidden;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  color: #eef5fa;
+
+  font-size: 10px;
+}
+
+.roc-menu-profile span {
+  color: #678297;
+
+  font-size: 8px;
+}
+
+.roc-menu-divider {
+  height: 1px;
+
+  margin: 5px 3px;
+
+  background: #17374b;
+}
+
+.roc-logout-button {
+  width: 100%;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 0 9px;
+
+  border: 0;
+  border-radius: 5px;
+
+  background: transparent;
+
+  color: #e78383;
+
+  font-size: 9px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  text-align: left;
+
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.roc-logout-button:hover {
+  background: rgba(239, 68, 68, 0.1);
+
+  color: #ff9b9b;
+}
+
+
+/* =========================================================
+   MAIN CONTENT
+   ========================================================= */
+
+.app-content {
+  width: 100%;
+
+  padding: 18px;
+}
+
+
+/* =========================================================
+   KPI GRID
+   ========================================================= */
+
+.dashboard-kpi-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(auto-fit, minmax(170px, 1fr));
+
+  gap: 12px;
+}
+
+.dashboard-card {
+  min-width: 0;
+
+  padding: 14px;
+
+  border: 1px solid #173b50;
+  border-radius: 10px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #0c2030 0%,
+      #0a1927 100%
+    );
+
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.02);
+}
+
+.dashboard-card-title {
+  color: #8ba1b6;
+
+  font-size: 11px;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.4px;
+}
+
+.dashboard-card-value {
+  margin-top: 10px;
+
+  color: #ffffff;
+
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.dashboard-card-subtitle {
+  margin-top: 6px;
+
+  color: #6f879d;
+
+  font-size: 11px;
+}
+
+.kpi-card {
+  min-height: 108px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+
+/* =========================================================
+   DASHBOARD GRID
+   ========================================================= */
+
+.dashboard-section-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(12, minmax(0, 1fr));
+
+  gap: 12px;
+
+  margin-top: 12px;
+}
+
+.span-12 {
+  grid-column: span 12;
+}
+
+.span-8 {
+  grid-column: span 8;
+}
+
+.span-6 {
+  grid-column: span 6;
+}
+
+.span-4 {
+  grid-column: span 4;
+}
+
+
+/* =========================================================
+   PANELS
+   ========================================================= */
+
+.panel-title {
+  margin: 0 0 12px;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  color: #f2f6fa;
+}
+
+.panel-muted {
+  color: #7290a8;
+}
+
+.placeholder-panel {
+  min-height: 220px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #58728a;
+
+  font-size: 13px;
+}
+
+
+/* =========================================================
+   DASHBOARD LOADING / ERROR
+   ========================================================= */
+
+.dashboard-loading {
+  padding: 40px;
+
+  text-align: center;
+
+  color: #7e95a9;
+}
+
+.dashboard-error {
+  margin-bottom: 12px;
+
+  padding: 12px 14px;
+
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: 7px;
+
+  background: rgba(220, 38, 38, 0.12);
+
+  color: #ff8e8e;
+}
+
+
+/* =========================================================
+   HOUSEKEEPING
+   ========================================================= */
+
+.housekeeping-panel {
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.housekeeping-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 9px 0;
+
+  border-bottom:
+    1px solid rgba(255, 255, 255, 0.04);
+
+  color: #8299ad;
+
+  font-size: 11px;
+}
+
+.housekeeping-row strong {
+  color: #f0f5fa;
+
+  font-size: 13px;
+}
+
+.housekeeping-divider {
+  height: 1px;
+
+  margin: 5px 0;
+
+  background: #17384d;
+}
+
+.housekeeping-live {
+  margin-top: 12px;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 6px;
+
+  color: #29ce82;
+
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.housekeeping-live-dot {
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+
+  background: #29ce82;
+
+  box-shadow:
+    0 0 7px rgba(41, 206, 130, 0.7);
+}
+
+
+/* =========================================================
+   DARK CHART
+   ========================================================= */
+
+.dark-chart {
+  width: 100%;
+  min-width: 0;
+
+  padding: 12px;
+
+  border: 1px solid #173b50;
+  border-radius: 9px;
+
+  background: #0a1d2c;
+}
+
+.dark-chart-title {
+  margin: 0 0 8px;
+
+  color: #dfeaf4;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.dark-chart-body {
+  width: 100%;
+  height: 240px;
+}
+
+.dark-chart-wide {
+  margin-top: 12px;
+}
+
+.dark-chart-wide .dark-chart-body {
+  height: 260px;
+}
+
+
+/* =========================================================
+   REVENUE MIX
+   ========================================================= */
+
+.revenue-mix {
+  width: 100%;
+}
+
+.revenue-donut-wrapper {
+  position: relative;
+
+  width: 100%;
+  height: 185px;
+}
+
+.revenue-donut-center {
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  pointer-events: none;
+}
+
+.revenue-donut-center span {
+  color: #72899d;
+
+  font-size: 9px;
+}
+
+.revenue-donut-center strong {
+  margin-top: 3px;
+
+  color: #ffffff;
+
+  font-size: 14px;
+}
+
+.revenue-donut-center small {
+  color: #71879b;
+
+  font-size: 8px;
+}
+
+.revenue-legend {
+  display: flex;
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+.revenue-legend-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 8px;
+
+  font-size: 10px;
+}
+
+.revenue-legend-name {
+  display: flex;
+  align-items: center;
+
+  gap: 5px;
+
+  color: #8ba2b6;
+}
+
+.revenue-dot {
+  width: 7px;
+  height: 7px;
+
+  display: inline-block;
+
+  border-radius: 2px;
+}
+
+.revenue-legend-value {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+}
+
+.revenue-legend-value strong {
+  color: #dce6ef;
+}
+
+.revenue-legend-value span {
+  min-width: 70px;
+
+  text-align: right;
+
+  color: #71889b;
+
+  font-size: 9px;
+}
+
+
+/* =========================================================
+   HOTEL TREND
+   ========================================================= */
+
+.hotel-trend-section {
+  margin: 0;
+}
+
+.hotel-trend-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin-bottom: 12px;
+}
+
+.hotel-trend-header h2 {
+  margin: 0;
+
+  color: #f3f7fb;
+
+  font-size: 16px;
+}
+
+.hotel-trend-header span {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #68859c;
+
+  font-size: 10px;
+}
+
+.trend-range-buttons {
+  display: flex;
+
+  gap: 6px;
+}
+
+.trend-range-button {
+  height: 30px;
+
+  padding: 0 10px;
+
+  border: 1px solid #214158;
+  border-radius: 6px;
+
+  background: #102438;
+
+  color: #8fa6b9;
+
+  font-size: 10px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.trend-range-button:hover {
+  border-color: #2f5d7c;
+
+  color: #d9e5ee;
+}
+
+.trend-range-button.active {
+  border-color: #1687df;
+
+  background: #1687df;
+
+  color: #ffffff;
+}
+
+.trend-chart-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 12px;
+}
+
+.trend-error {
+  padding: 10px;
+
+  color: #ff7777;
+}
+
+.trend-loading {
+  padding: 30px;
+
+  text-align: center;
+
+  color: #71889c;
+}
+
+
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
+
+.sidebar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+
+  background: #17384d;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: #24516e;
+}
+
+
+/* =========================================================
+   RESPONSIVE - 1100
+   ========================================================= */
+
+@media (max-width: 1100px) {
+  .sidebar {
+    width: 180px;
+    flex-basis: 180px;
+  }
+
+  .app-main {
+    width: auto;
+
+    margin-left: 0;
+  }
+
+  .span-8,
+  .span-6,
+  .span-4 {
+    grid-column: span 12;
+  }
+}
+
+
+/* =========================================================
+   RESPONSIVE - 1000
+   ========================================================= */
+
+@media (max-width: 1000px) {
+  .trend-chart-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* =========================================================
+   RESPONSIVE - 850
+   ========================================================= */
+
+@media (max-width: 850px) {
+  .roc-top-header {
+    padding: 0 14px;
+  }
+
+  .roc-header-resort {
+    display: none;
+  }
+
+  .roc-business-date span {
+    display: none;
+  }
+
+  .roc-header-separator {
+    display: none;
+  }
+
+  .roc-user-text {
+    display: none;
+  }
+
+  .roc-user-button {
+    min-width: auto;
+
+    padding: 0 4px;
+  }
+}
+
+
+/* =========================================================
+   RESPONSIVE - MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+  .sidebar {
+    width: 64px;
+    flex-basis: 64px;
+  }
+
+  .sidebar-brand {
+    padding: 18px 8px;
+
+    text-align: center;
+  }
+
+  .brand-logo {
+    font-size: 16px;
+  }
+
+  .brand-subtitle {
+    display: none;
+  }
+
+.sidebar-item {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  margin-bottom: 4px;
+
+  padding: 10px 12px;
+
+  border: 0;
+  border-radius: 7px;
+
+  background: transparent;
+
+  color: #8ea1b7;
+
+  cursor: pointer;
+
+  text-align: left;
+
+  font-size: 12px;
+
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+  .sidebar-dot {
+    width: 8px;
+    height: 8px;
+
+    flex-basis: 8px;
+  }
+
+  .roc-top-header {
+    height: 56px;
+
+    gap: 8px;
+
+    padding: 0 10px;
+  }
+
+  .roc-header-title {
+    font-size: 12px;
+  }
+
+  .roc-business-date input {
+    width: 105px;
+
+    font-size: 9px;
+  }
+
+  .roc-header-actions {
+    gap: 7px;
+  }
+
+  .app-content {
+    padding: 10px;
+  }
+
+  .dashboard-kpi-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 8px;
+  }
+
+  .dashboard-card {
+    padding: 10px;
+  }
+
+  .dashboard-card-value {
+    font-size: 19px;
+  }
+
+  .dashboard-card-title {
+    font-size: 9px;
+  }
+
+  .dashboard-card-subtitle {
+    font-size: 9px;
+  }
+
+  .hotel-trend-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+/* =========================================
+   ALERT CENTER
+   ========================================= */
+
+.alert-center {
+  width: 100%;
+}
+
+.alert-center-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 14px;
+}
+
+.alert-center-header h3 {
+  margin: 0;
+
+  color: #eef5fa;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.alert-center-header span {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #607b90;
+
+  font-size: 8px;
+}
+
+.alert-count {
+  min-width: 24px;
+  height: 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 6px;
+
+  background: #10283a;
+
+  color: #9eb4c5;
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.alert-list {
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+}
+
+.alert-item {
+  position: relative;
+
+  display: flex;
+  align-items: flex-start;
+
+  gap: 9px;
+
+  padding: 10px;
+
+  border:
+    1px solid #17384d;
+
+  border-radius: 7px;
+
+  background: #0a1c2a;
+}
+
+.alert-status-dot {
+  width: 7px;
+  height: 7px;
+
+  flex: 0 0 7px;
+
+  margin-top: 4px;
+
+  border-radius: 50%;
+}
+
+.alert-content {
+  flex: 1;
+
+  min-width: 0;
+}
+
+.alert-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 8px;
+}
+
+.alert-item-header strong {
+  color: #dce7f0;
+
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.alert-item-header span {
+  color: #536e82;
+
+  font-size: 8px;
+
+  white-space: nowrap;
+}
+
+.alert-content p {
+  margin: 4px 0 0;
+
+  color: #7790a3;
+
+  font-size: 9px;
+
+  line-height: 1.45;
+}
+
+
+/* CRITICAL */
+
+.alert-critical {
+  border-color:
+    rgba(239, 68, 68, 0.25);
+
+  background:
+    rgba(239, 68, 68, 0.05);
+}
+
+.alert-critical
+.alert-status-dot {
+  background: #ef4444;
+
+  box-shadow:
+    0 0 8px
+    rgba(239, 68, 68, 0.55);
+}
+
+
+/* WARNING */
+
+.alert-warning {
+  border-color:
+    rgba(245, 158, 11, 0.23);
+
+  background:
+    rgba(245, 158, 11, 0.04);
+}
+
+.alert-warning
+.alert-status-dot {
+  background: #f59e0b;
+
+  box-shadow:
+    0 0 8px
+    rgba(245, 158, 11, 0.45);
+}
+
+
+/* INFO */
+
+.alert-info {
+  border-color:
+    rgba(24, 141, 242, 0.22);
+
+  background:
+    rgba(24, 141, 242, 0.04);
+}
+
+.alert-info
+.alert-status-dot {
+  background: #188df2;
+
+  box-shadow:
+    0 0 8px
+    rgba(24, 141, 242, 0.45);
+}   
+
+.revenue-alert-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.revenue-section {
+  flex: 0 0 auto;
+}
+
+.revenue-alert-divider {
+  height: 1px;
+
+  margin: 14px 0;
+
+  background: #17384d;
+}
+
+.revenue-alert-card .alert-center {
+  flex: 1;
+}
+
+.revenue-alert-card .alert-list {
+  max-height: 320px;
+
+  overflow-y: auto;
+
+  padding-right: 2px;
+}
