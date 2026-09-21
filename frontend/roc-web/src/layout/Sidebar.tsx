@@ -15,15 +15,18 @@ import {
   Settings,
 } from "lucide-react";
 
+import { NavLink } from "react-router-dom";
+
 const menuItems = [
   {
     label: "Dashboard CEO",
     icon: LayoutDashboard,
-    active: true,
+    path: "/dashboard",
   },
   {
     label: "Khách sạn",
     icon: Hotel,
+    path: "/hotel",
   },
   {
     label: "Nhà hàng",
@@ -78,7 +81,6 @@ const menuItems = [
 export default function Sidebar() {
   return (
     <aside className="sidebar">
-
       <div className="sidebar-brand">
         <div className="brand-logo">
           RESOFT
@@ -89,21 +91,39 @@ export default function Sidebar() {
         </div>
       </div>
 
-
       <nav className="sidebar-nav">
-
         {menuItems.map((item) => {
           const Icon = item.icon;
+
+          if (item.path) {
+            return (
+              <NavLink
+                key={item.label}
+                to={item.path}
+                className={({ isActive }) =>
+                  `sidebar-item ${
+                    isActive ? "active" : ""
+                  }`
+                }
+              >
+                <Icon
+                  size={16}
+                  strokeWidth={1.8}
+                  className="sidebar-icon"
+                />
+
+                <span className="sidebar-label">
+                  {item.label}
+                </span>
+              </NavLink>
+            );
+          }
 
           return (
             <button
               key={item.label}
               type="button"
-              className={`sidebar-item ${
-                item.active
-                  ? "active"
-                  : ""
-              }`}
+              className="sidebar-item"
             >
               <Icon
                 size={16}
@@ -117,9 +137,7 @@ export default function Sidebar() {
             </button>
           );
         })}
-
       </nav>
-
     </aside>
   );
 }

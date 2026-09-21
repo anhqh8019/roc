@@ -46,16 +46,28 @@ export interface HotelDashboardResponse {
 export interface RoomStatusResponse {
   roomCode: string;
   roomType: string;
-  floor: string;
-  occupancyStatus: "VACANT" | "OCCUPIED";
+  roomTypeName: string;
+  zone: string;
+  occupancyStatus: "OCCUPIED" | "VACANT";
   housekeepingStatus:
     | "CLEAN"
     | "DIRTY"
-    | "INSPECTED"
-    | "TOUCH"
-    | "STOP_SALE"
-    | "UNKNOWN";
+    | "INSPECTED";
   inspected: boolean;
+}
+
+export interface RoomStayInfo {
+  folioNum: string;
+  arrivalDate: string | null;
+  departureDate: string | null;
+  adults: number;
+  children: number;
+  rateAmount: number;
+}
+
+export interface RoomDetailResponse
+  extends RoomStatusResponse {
+  currentStay: RoomStayInfo | null;
 }
 
 export interface HotelTrendResponse {
@@ -66,4 +78,99 @@ export interface HotelTrendResponse {
   totalNetRevenue: number;
   adr: number;
   revPar: number;
+}
+
+export interface InHouseStayResponse {
+  folioNum: string;
+  roomCode: string;
+  roomType: string;
+  roomTypeName: string;
+
+  arrivalDate: string | null;
+  departureDate: string | null;
+
+  adults: number;
+  children: number;
+
+  rateAmount: number;
+  checkInTime: string | null;
+}
+
+export type ArrivalStatus =
+  | "EXPECTED"
+  | "CHECKED_IN"
+  | "CANCELLED"
+  | "NO_SHOW";
+
+export interface ArrivalItemResponse {
+  folioNum: string;
+  roomCode: string;
+  roomType: string;
+  roomTypeName: string;
+
+  arrivalDate: string | null;
+  departureDate: string | null;
+
+  adults: number;
+  children: number;
+
+  rateAmount: number;
+
+  status: ArrivalStatus;
+
+  checkInTime: string | null;
+  cancelTime: string | null;
+
+  noShow: boolean;
+  walkIn: boolean;
+}
+
+export interface ArrivalSummary {
+  total: number;
+  expected: number;
+  checkedIn: number;
+  cancelled: number;
+  noShow: number;
+}
+
+export interface ArrivalsResponse {
+  businessDate: string;
+  summary: ArrivalSummary;
+  arrivals: ArrivalItemResponse[];
+}
+
+export type DepartureStatus =
+  | "DUE_OUT"
+  | "CHECKED_OUT";
+
+export interface DepartureItemResponse {
+  folioNum: string;
+  roomCode: string;
+  roomType: string;
+  roomTypeName: string;
+
+  arrivalDate: string | null;
+  departureDate: string | null;
+
+  adults: number;
+  children: number;
+
+  rateAmount: number;
+
+  status: DepartureStatus;
+
+  checkInTime: string | null;
+  checkOutTime: string | null;
+}
+
+export interface DepartureSummary {
+  total: number;
+  dueOut: number;
+  checkedOut: number;
+}
+
+export interface DeparturesResponse {
+  businessDate: string;
+  summary: DepartureSummary;
+  departures: DepartureItemResponse[];
 }

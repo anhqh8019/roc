@@ -5,16 +5,81 @@ import {
 } from "react";
 
 import { useAuth } from "../auth/AuthContext";
+import { useLocation } from "react-router-dom";
 
-interface TopHeaderProps {
-  selectedDate: string;
-  onDateChange: (date: string) => void;
-}
+// interface TopHeaderProps {
+//   selectedDate: string;
+//   onDateChange: (date: string) => void;
+// }
 
-export default function TopHeader({
-  selectedDate,
-  onDateChange,
-}: TopHeaderProps) {
+import {
+  useBusinessDate,
+} from "../context/BusinessDateContext";
+
+export default function TopHeader() {
+  const {
+    businessDate,
+    setBusinessDate,
+  } = useBusinessDate();
+
+ 
+
+const location = useLocation();
+
+const pageInfo = (() => {
+  const path =
+    location.pathname;
+
+  if (
+    path.startsWith(
+      "/hotel/arrivals"
+    )
+  ) {
+    return {
+      title: "Khách sạn",
+      subtitle: "Arrivals",
+    };
+  }
+
+  if (
+    path.startsWith(
+      "/hotel/departures"
+    )
+  ) {
+    return {
+      title: "Khách sạn",
+      subtitle: "Departures",
+    };
+  }
+
+  if (
+    path.startsWith(
+      "/hotel/in-house"
+    )
+  ) {
+    return {
+      title: "Khách sạn",
+      subtitle: "In-house",
+    };
+  }
+
+  if (
+    path.startsWith("/hotel")
+  ) {
+    return {
+      title: "Khách sạn",
+      subtitle: "Room Operations",
+    };
+  }
+
+  return {
+    title: "Dashboard CEO",
+    subtitle:
+      "Resoft Hot Springs Resort",
+  };
+})();
+
+
   const { user, logout } = useAuth();
 
   const [menuOpen, setMenuOpen] =
@@ -109,14 +174,12 @@ export default function TopHeader({
           LEFT
           ========================= */}
 
-      <div className="roc-header-left">
-        <div className="roc-header-title">
-          Dashboard CEO
-        </div>
+      <div className="roc-header-title">
+        {pageInfo.title}
+      </div>
 
-        <div className="roc-header-resort">
-          Resoft Hot Springs Resort
-        </div>
+      <div className="roc-header-resort">
+        {pageInfo.subtitle}
       </div>
 
 
@@ -133,15 +196,17 @@ export default function TopHeader({
             Business Date
           </span>
 
-          <input
-            type="date"
-            value={selectedDate}
-            onChange={(e) =>
-              onDateChange(
-                e.target.value
-              )
-            }
-          />
+        <input
+  type="date"
+  value={businessDate}
+  onChange={(e) =>
+    setBusinessDate(
+      e.target.value
+    )
+  }
+/>
+
+
         </div>
 
 

@@ -1,5 +1,6 @@
 package org.venusgiti.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,9 +29,7 @@ public class SecurityConfig {
     ) throws Exception {
 
         http
-                .csrf(csrf ->
-                        csrf.disable()
-                )
+                .csrf(csrf -> csrf.disable())
 
                 .cors(cors -> {})
 
@@ -40,20 +39,35 @@ public class SecurityConfig {
                         )
                 )
 
-                .authorizeHttpRequests(auth ->
-                        auth
-                                .requestMatchers(
-                                        "/api/v1/auth/**"
+                .exceptionHandling(exception ->
+                        exception
+                                .authenticationEntryPoint(
+                                        (request, response, authException) ->
+                                                response.sendError(
+                                                        HttpServletResponse.SC_UNAUTHORIZED,
+                                                        "Unauthorized"
+                                                )
                                 )
-                                .permitAll()
-
-                                .requestMatchers(
-                                        "/api/v1/admin/**"
+                                .accessDeniedHandler(
+                                        (request, response, accessDeniedException) ->
+                                                response.sendError(
+                                                        HttpServletResponse.SC_FORBIDDEN,
+                                                        "Forbidden"
+                                                )
                                 )
-                                .hasRole("ADMIN")
+                )
 
-                                .anyRequest()
-                                .authenticated()
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/api/v1/auth/**",
+                                "/error"
+                        ).permitAll()
+
+                        .requestMatchers(
+                                "/api/v1/admin/**"
+                        ).hasRole("ADMIN")
+
+                        .anyRequest().authenticated()
                 )
 
                 .addFilterBefore(

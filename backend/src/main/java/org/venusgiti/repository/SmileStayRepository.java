@@ -4,8 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.venusgiti.dto.ArrivalItemResponse;
+import org.venusgiti.dto.DepartureItemResponse;
+import org.venusgiti.dto.InHouseStayResponse;
+import org.venusgiti.util.ArrivalStatus;
+import org.venusgiti.util.DepartureStatus;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -178,5 +184,286 @@ public class SmileStayRepository {
             LocalDate businessDate,
             int occupiedRooms
     ) {}
+
+    public List<InHouseStayResponse> getInHouseStays() {
+
+        String sql = """
+            SELECT
+                f.FolioNum,
+                f.RoomCode,
+                f.RoomTypeCode,
+                rt.Description AS RoomTypeName,
+                f.ArrivalDate,
+                f.DepartureDate,
+                f.NumAdult,
+                f.NumChild,
+                f.RateAmount,
+                f.CheckInTime
+            FROM Folio f
+            INNER JOIN Room r
+                ON r.RoomCode = f.RoomCode
+            INNER JOIN RoomType rt
+                ON rt.RoomTypeCode = r.RoomTypeCode
+            WHERE f.FolioStatus = 2
+              AND rt.NumRoom > 0
+            ORDER BY
+                f.RoomCode,
+                f.FolioNum
+            """;
+
+        return jdbc.query(
+                sql,
+                Map.of(),
+                (rs, rowNum) -> new InHouseStayResponse(
+                        rs.getString("FolioNum"),
+                        rs.getString("RoomCode"),
+                        rs.getString("RoomTypeCode"),
+                        rs.getString("RoomTypeName"),
+
+                        rs.getDate("ArrivalDate") != null
+                                ? rs.getDate("ArrivalDate").toLocalDate()
+                                : null,
+
+                        rs.getDate("DepartureDate") != null
+                                ? rs.getDate("DepartureDate").toLocalDate()
+                                : null,
+
+                        rs.getInt("NumAdult"),
+                        rs.getInt("NumChild"),
+                        rs.getBigDecimal("RateAmount"),
+
+                        rs.getTimestamp("CheckInTime") != null
+                                ? rs.getTimestamp("CheckInTime").toLocalDateTime()
+                                : null
+                )
+        );
+    }
+
+    public List<ArrivalItemResponse> getArrivals(
+            LocalDate businessDate
+    ) {
+
+        String sql = """
+        SELECT
+            f.FolioNum,
+            f.RoomCode,
+            f.RoomTypeCode,
+            rt.Description AS RoomTypeName,
+
+            f.ArrivalDate,
+            f.DepartureDate,
+
+            f.NumAdult,
+            f.NumChild,
+
+            f.RateAmount,
+
+            f.CheckInTime,
+            f.CancelTime,
+
+            f.NoShowFlag,
+            f.WalkInFlag
+
+        FROM Folio f
+
+        INNER JOIN Room r
+            ON r.RoomCode = f.RoomCode
+
+        INNER JOIN RoomType rt
+            ON rt.RoomTypeCode = r.RoomTypeCode
+
+        WHERE rt.NumRoom > 0
+
+          AND f.ArrivalDate >= :fromDate
+          AND f.ArrivalDate < :toDate
+
+        ORDER BY
+            f.RoomCode,
+            f.FolioNum
+        """;
+
+        Map<String, Object> params = Map.of(
+                "fromDate",
+                businessDate.atStartOfDay(),
+
+                "toDate",
+                businessDate.plusDays(1).atStartOfDay()
+        );
+
+        return jdbc.query(
+                sql,
+                params,
+                (rs, rowNum) -> {
+
+                    LocalDateTime checkInTime =
+                            rs.getTimestamp("CheckInTime") != null
+                                    ? rs.getTimestamp("CheckInTime")
+                                    .toLocalDateTime()
+                                    : null;
+
+                    LocalDateTime cancelTime =
+                            rs.getTimestamp("CancelTime") != null
+                                    ? rs.getTimestamp("CancelTime")
+                                    .toLocalDateTime()
+                                    : null;
+
+                    boolean noShow =
+                            rs.getInt("NoShowFlag") == 1;
+
+                    boolean walkIn =
+                            rs.getInt("WalkInFlag") == 1;
+
+                    ArrivalStatus status;
+
+                    if (cancelTime != null) {
+                        status = ArrivalStatus.CANCELLED;
+
+                    } else if (noShow) {
+                        status = ArrivalStatus.NO_SHOW;
+
+                    } else if (checkInTime != null) {
+                        status = ArrivalStatus.CHECKED_IN;
+
+                    } else {
+                        status = ArrivalStatus.EXPECTED;
+                    }
+
+                    return new ArrivalItemResponse(
+                            rs.getString("FolioNum"),
+                            rs.getString("RoomCode"),
+                            rs.getString("RoomTypeCode"),
+                            rs.getString("RoomTypeName"),
+
+                            rs.getDate("ArrivalDate") != null
+                                    ? rs.getDate("ArrivalDate")
+                                    .toLocalDate()
+                                    : null,
+
+                            rs.getDate("DepartureDate") != null
+                                    ? rs.getDate("DepartureDate")
+                                    .toLocalDate()
+                                    : null,
+
+                            rs.getInt("NumAdult"),
+                            rs.getInt("NumChild"),
+
+                            rs.getBigDecimal("RateAmount"),
+
+                            status,
+
+                            checkInTime,
+                            cancelTime,
+
+                            noShow,
+                            walkIn
+                    );
+                }
+        );
+    }
+
+    public List<DepartureItemResponse> getDepartures(
+            LocalDate businessDate
+    ) {
+
+        String sql = """
+        SELECT
+            f.FolioNum,
+            f.RoomCode,
+            f.RoomTypeCode,
+            rt.Description AS RoomTypeName,
+
+            f.ArrivalDate,
+            f.DepartureDate,
+
+            f.NumAdult,
+            f.NumChild,
+
+            f.RateAmount,
+
+            f.CheckInTime,
+            f.CheckOutTime
+
+        FROM Folio f
+
+        INNER JOIN Room r
+            ON r.RoomCode = f.RoomCode
+
+        INNER JOIN RoomType rt
+            ON rt.RoomTypeCode = r.RoomTypeCode
+
+        WHERE rt.NumRoom > 0
+
+          AND f.DepartureDate >= :fromDate
+          AND f.DepartureDate < :toDate
+
+          AND f.CancelTime IS NULL
+          AND ISNULL(f.NoShowFlag, 0) = 0
+
+        ORDER BY
+            f.RoomCode,
+            f.FolioNum
+        """;
+
+        Map<String, Object> params = Map.of(
+                "fromDate",
+                businessDate.atStartOfDay(),
+
+                "toDate",
+                businessDate
+                        .plusDays(1)
+                        .atStartOfDay()
+        );
+
+        return jdbc.query(
+                sql,
+                params,
+                (rs, rowNum) -> {
+
+                    LocalDateTime checkInTime =
+                            rs.getTimestamp("CheckInTime") != null
+                                    ? rs.getTimestamp("CheckInTime")
+                                    .toLocalDateTime()
+                                    : null;
+
+                    LocalDateTime checkOutTime =
+                            rs.getTimestamp("CheckOutTime") != null
+                                    ? rs.getTimestamp("CheckOutTime")
+                                    .toLocalDateTime()
+                                    : null;
+
+                    DepartureStatus status =
+                            checkOutTime != null
+                                    ? DepartureStatus.CHECKED_OUT
+                                    : DepartureStatus.DUE_OUT;
+
+                    return new DepartureItemResponse(
+                            rs.getString("FolioNum"),
+                            rs.getString("RoomCode"),
+                            rs.getString("RoomTypeCode"),
+                            rs.getString("RoomTypeName"),
+
+                            rs.getDate("ArrivalDate") != null
+                                    ? rs.getDate("ArrivalDate")
+                                    .toLocalDate()
+                                    : null,
+
+                            rs.getDate("DepartureDate") != null
+                                    ? rs.getDate("DepartureDate")
+                                    .toLocalDate()
+                                    : null,
+
+                            rs.getInt("NumAdult"),
+                            rs.getInt("NumChild"),
+
+                            rs.getBigDecimal("RateAmount"),
+
+                            status,
+
+                            checkInTime,
+                            checkOutTime
+                    );
+                }
+        );
+    }
 
 }

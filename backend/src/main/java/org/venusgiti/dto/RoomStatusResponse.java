@@ -6,8 +6,10 @@ import org.venusgiti.util.OccupancyStatus;
 public record RoomStatusResponse(
         String roomCode,
         String roomType,
-        String floor,
+        String roomTypeName,
+        String zone,
         OccupancyStatus occupancyStatus,
         HousekeepingStatus housekeepingStatus,
         boolean inspected
-) {}
+) {
+}
