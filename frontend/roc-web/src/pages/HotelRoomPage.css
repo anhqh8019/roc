@@ -1,0 +1,279 @@
+.hotel-room-page {
+  padding: 18px;
+  color: #e8f3ff;
+}
+
+.room-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.room-page-header h1 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.room-page-header p {
+  margin: 4px 0 0;
+  color: #7393ad;
+  font-size: 12px;
+}
+
+.room-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.room-summary-card {
+  padding: 14px 16px;
+  background: #0b2030;
+  border: 1px solid #173e57;
+  border-radius: 10px;
+}
+
+.room-summary-card span {
+  display: block;
+  color: #7fa1bb;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.room-summary-card strong {
+  display: block;
+  margin-top: 5px;
+  font-size: 25px;
+}
+
+.room-toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+  padding: 10px;
+  background: #091a29;
+  border: 1px solid #17354b;
+  border-radius: 10px;
+}
+
+.room-filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.room-filter-group button {
+  padding: 7px 11px;
+  border: 1px solid #24445c;
+  border-radius: 6px;
+  background: #0b1c2a;
+  color: #91acc0;
+  cursor: pointer;
+}
+
+.room-filter-group button.active {
+  background: #0e87df;
+  border-color: #0e87df;
+  color: white;
+}
+
+.room-operation-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 310px;
+  gap: 14px;
+}
+
+.room-board,
+.room-detail-panel {
+  background: #081927;
+  border: 1px solid #17384f;
+  border-radius: 10px;
+}
+
+.room-board {
+  padding: 14px;
+}
+
+.room-operation-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(6, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.operation-room-card {
+  min-height: 108px;
+  padding: 10px;
+  text-align: left;
+  background: #0c2232;
+  color: #dcecff;
+  border: 1px solid #24445b;
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.operation-room-card:hover {
+  transform: translateY(-1px);
+  border-color: #168ee0;
+}
+
+.operation-room-card.selected {
+  outline: 2px solid #1a9fff;
+}
+
+.operation-room-card strong {
+  display: block;
+  font-size: 17px;
+}
+
+.room-type-code {
+  display: block;
+  margin-top: 3px;
+  color: #76a7c8;
+  font-size: 11px;
+}
+
+.room-type-name {
+  display: block;
+  min-height: 28px;
+  margin-top: 4px;
+  color: #a8bfd0;
+  font-size: 10px;
+}
+
+.room-card-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.room-card-status span,
+.detail-status-row span {
+  padding: 3px 6px;
+  background: #112d40;
+  border-radius: 4px;
+  font-size: 9px;
+}
+
+.operation-room-card.occupied {
+  border-left: 3px solid #2399ef;
+}
+
+.operation-room-card.dirty {
+  border-bottom: 3px solid #e79a35;
+}
+
+.operation-room-card.inspected {
+  border-bottom: 3px solid #956fe8;
+}
+
+.room-detail-panel {
+  min-height: 420px;
+  padding: 16px;
+}
+
+.room-detail-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.room-detail-header h2 {
+  margin: 0;
+  font-size: 26px;
+}
+
+.room-detail-header p {
+  margin: 4px 0 0;
+  color: #82a4bb;
+  font-size: 12px;
+}
+
+.room-detail-close {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  background: transparent;
+  color: #8aa9bd;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.detail-status-row {
+  display: flex;
+  gap: 6px;
+  margin: 14px 0 18px;
+}
+
+.detail-section {
+  padding: 14px 0;
+  border-top: 1px solid #173448;
+}
+
+.detail-section h3 {
+  margin: 0 0 10px;
+  color: #80a7c2;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0;
+  font-size: 12px;
+}
+
+.detail-row span {
+  color: #7694aa;
+}
+
+.detail-row strong {
+  text-align: right;
+  font-weight: 500;
+}
+
+.room-detail-empty,
+.room-loading,
+.no-current-stay {
+  color: #718da2;
+  font-size: 12px;
+}
+
+.room-error {
+  margin-bottom: 12px;
+  padding: 10px;
+  border: 1px solid #714141;
+  border-radius: 7px;
+  background: #2a171b;
+}
+
+@media (max-width: 1200px) {
+  .room-operation-grid {
+    grid-template-columns:
+      repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .room-summary-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .room-operation-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .room-toolbar {
+    flex-direction: column;
+  }
+}

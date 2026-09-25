@@ -70,7 +70,21 @@ const pageInfo = (() => {
       title: "Khách sạn",
       subtitle: "Room Operations",
     };
+
+    
   }
+
+    if (
+    path.startsWith("/alerts")
+  ) {
+    return {
+      title: "Cảnh báo",
+      subtitle: "Operation Alert Center",
+    };
+
+    
+  }
+  
 
   return {
     title: "Dashboard CEO",

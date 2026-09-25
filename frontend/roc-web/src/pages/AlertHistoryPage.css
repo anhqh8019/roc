@@ -1,0 +1,248 @@
+.alert-history-page {
+  padding: 24px;
+  width: 100%;
+  min-height: 100%;
+}
+
+.alert-history-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.alert-history-header h2 {
+  margin: 0 0 6px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.alert-history-header p {
+  margin: 0;
+  font-size: 13px;
+  opacity: 0.65;
+}
+
+.alert-history-total {
+  padding: 7px 12px;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 8px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.alert-history-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid rgba(56, 189, 248, 0.18);
+  border-radius: 12px;
+}
+
+.alert-history-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+}
+
+.alert-history-table th {
+  padding: 13px 16px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  border-bottom: 1px solid rgba(56, 189, 248, 0.18);
+  opacity: 0.7;
+}
+
+.alert-history-table td {
+  padding: 15px 16px;
+  font-size: 13px;
+  vertical-align: middle;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  white-space: nowrap;
+}
+
+.alert-history-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.alert-history-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.025);
+}
+
+
+/* Alert name */
+
+.history-rule-name {
+  font-weight: 600;
+  margin-bottom: 4px;
+  white-space: nowrap;
+}
+
+.history-rule-code {
+  font-size: 11px;
+  opacity: 0.5;
+  white-space: nowrap;
+}
+
+
+/* Priority */
+
+.history-priority {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 36px;
+  height: 26px;
+
+  padding: 0 8px;
+
+  border-radius: 999px;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.priority-p1 {
+  background: rgba(239, 68, 68, 0.16);
+}
+
+.priority-p2 {
+  background: rgba(249, 115, 22, 0.16);
+}
+
+.priority-p3 {
+  background: rgba(234, 179, 8, 0.16);
+}
+
+.priority-p4 {
+  background: rgba(59, 130, 246, 0.16);
+}
+
+
+/* Read status */
+
+.history-status {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 5px 9px;
+
+  border-radius: 999px;
+
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.history-status.unread {
+  background: rgba(249, 115, 22, 0.15);
+}
+
+.history-status.read {
+  background: rgba(34, 197, 94, 0.12);
+  opacity: 0.8;
+}
+
+
+/* Give alert name more room */
+
+.alert-history-table th:nth-child(2),
+.alert-history-table td:nth-child(2) {
+  min-width: 190px;
+}
+
+
+/* Date/time columns */
+
+.alert-history-table th:nth-child(6),
+.alert-history-table td:nth-child(6),
+.alert-history-table th:nth-child(7),
+.alert-history-table td:nth-child(7) {
+  min-width: 155px;
+}
+
+.alert-history-filters {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+
+  padding: 14px 16px;
+  margin-bottom: 16px;
+
+  border: 1px solid rgba(56, 189, 248, 0.18);
+  border-radius: 10px;
+
+  flex-wrap: wrap;
+}
+
+.history-filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.history-filter-field label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.history-filter-field input,
+.history-filter-field select {
+  height: 34px;
+  min-width: 135px;
+
+  padding: 0 10px;
+
+  border: 1px solid rgba(56, 189, 248, 0.22);
+  border-radius: 6px;
+
+  background: transparent;
+  color: inherit;
+
+  font-size: 12px;
+  outline: none;
+}
+
+.history-filter-field input:focus,
+.history-filter-field select:focus {
+  border-color: rgba(56, 189, 248, 0.65);
+}
+
+.history-filter-field select option {
+  color: #111;
+}
+
+.history-filter-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.history-filter-button {
+  height: 34px;
+  padding: 0 14px;
+
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 6px;
+
+  background: transparent;
+  color: inherit;
+
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.history-filter-button.primary {
+  background: rgba(14, 165, 233, 0.18);
+  border-color: rgba(14, 165, 233, 0.55);
+}
+
+.history-filter-button:hover {
+  background: rgba(255, 255, 255, 0.05);
+}

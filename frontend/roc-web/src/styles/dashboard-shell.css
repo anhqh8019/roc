@@ -1113,120 +1113,6 @@ select {
 }
 
 
-/* =========================================================
-   RESPONSIVE - MOBILE
-   ========================================================= */
-
-@media (max-width: 700px) {
-  .sidebar {
-    width: 64px;
-    flex-basis: 64px;
-  }
-
-  .sidebar-brand {
-    padding: 18px 8px;
-
-    text-align: center;
-  }
-
-  .brand-logo {
-    font-size: 16px;
-  }
-
-  .brand-subtitle {
-    display: none;
-  }
-
-.sidebar-item {
-  width: 100%;
-
-  display: flex;
-  align-items: center;
-
-  gap: 10px;
-
-  margin-bottom: 4px;
-
-  padding: 10px 12px;
-
-  border: 0;
-  border-radius: 7px;
-
-  background: transparent;
-
-  color: #8ea1b7;
-
-  cursor: pointer;
-
-  text-align: left;
-
-  font-size: 12px;
-
-  transition:
-    background 0.15s ease,
-    color 0.15s ease;
-}
-  .sidebar-dot {
-    width: 8px;
-    height: 8px;
-
-    flex-basis: 8px;
-  }
-
-  .roc-top-header {
-    height: 56px;
-
-    gap: 8px;
-
-    padding: 0 10px;
-  }
-
-  .roc-header-title {
-    font-size: 12px;
-  }
-
-  .roc-business-date input {
-    width: 105px;
-
-    font-size: 9px;
-  }
-
-  .roc-header-actions {
-    gap: 7px;
-  }
-
-  .app-content {
-    padding: 10px;
-  }
-
-  .dashboard-kpi-grid {
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
-
-    gap: 8px;
-  }
-
-  .dashboard-card {
-    padding: 10px;
-  }
-
-  .dashboard-card-value {
-    font-size: 19px;
-  }
-
-  .dashboard-card-title {
-    font-size: 9px;
-  }
-
-  .dashboard-card-subtitle {
-    font-size: 9px;
-  }
-
-  .hotel-trend-header {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-}
 
 /* =========================================
    ALERT CENTER
@@ -1630,4 +1516,26 @@ select {
 
   font-size: 9px;
   font-weight: 700;
+}
+
+ .sidebar-alert-badge {
+  margin-left: auto;
+
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 999px;
+  background: #ef4444;
+  color: #ffffff;
+
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
 }

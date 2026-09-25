@@ -16,6 +16,9 @@ import {
 } from "lucide-react";
 
 import { NavLink } from "react-router-dom";
+ 
+import { useAlert } from "../context/AlertContext";
+
 
 const menuItems = [
   {
@@ -47,6 +50,7 @@ const menuItems = [
   {
     label: "Cảnh báo",
     icon: Bell,
+    path: "/alerts",
   },
   {
     label: "Công việc",
@@ -78,10 +82,17 @@ const menuItems = [
   },
 ];
 
+
 export default function Sidebar() {
+
+ 
+const { unreadCount } = useAlert();
+
   return (
     <aside className="sidebar">
+
       <div className="sidebar-brand">
+
         <div className="brand-logo">
           RESOFT
         </div>
@@ -89,23 +100,28 @@ export default function Sidebar() {
         <div className="brand-subtitle">
           OPERATION CENTER
         </div>
+
       </div>
 
+
       <nav className="sidebar-nav">
+
         {menuItems.map((item) => {
+
           const Icon = item.icon;
 
-          if (item.path) {
+          /*
+           * Menu chưa có route:
+           * render div, KHÔNG dùng NavLink.
+           */
+          if (!item.path) {
+
             return (
-              <NavLink
+              <div
                 key={item.label}
-                to={item.path}
-                className={({ isActive }) =>
-                  `sidebar-item ${
-                    isActive ? "active" : ""
-                  }`
-                }
+                className="sidebar-item"
               >
+
                 <Icon
                   size={16}
                   strokeWidth={1.8}
@@ -115,16 +131,28 @@ export default function Sidebar() {
                 <span className="sidebar-label">
                   {item.label}
                 </span>
-              </NavLink>
+
+              </div>
             );
           }
 
+
+          /*
+           * Menu đã có route:
+           * dùng NavLink.
+           */
           return (
-            <button
+            <NavLink
               key={item.label}
-              type="button"
-              className="sidebar-item"
+              to={item.path}
+              end
+              className={({ isActive }) =>
+                `sidebar-item ${
+                  isActive ? "active" : ""
+                }`
+              }
             >
+
               <Icon
                 size={16}
                 strokeWidth={1.8}
@@ -134,10 +162,24 @@ export default function Sidebar() {
               <span className="sidebar-label">
                 {item.label}
               </span>
-            </button>
+
+
+            {item.path === "/alerts" &&
+              unreadCount > 0 && (
+                <span className="sidebar-alert-badge">
+                  {unreadCount > 99
+                    ? "99+"
+                    : unreadCount}
+                </span>
+              )}
+
+            </NavLink>
           );
+
         })}
+
       </nav>
+
     </aside>
   );
 }

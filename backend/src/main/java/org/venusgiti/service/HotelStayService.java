@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import org.venusgiti.dto.*;
 import org.venusgiti.repository.SmileStayRepository;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -101,6 +103,30 @@ public class HotelStayService {
                 summary,
                 departures
         );
+    }
+
+    public BigDecimal getOccupancyPercent(
+            LocalDate businessDate
+    ) {
+        int occupiedRooms =
+                repository.countOccupiedRooms(
+                        businessDate
+                );
+
+        int totalRooms = 84; // chỉ tạm thời để test
+
+        if (totalRooms == 0) {
+            return BigDecimal.ZERO;
+        }
+
+        return BigDecimal
+                .valueOf(occupiedRooms)
+                .multiply(BigDecimal.valueOf(100))
+                .divide(
+                        BigDecimal.valueOf(totalRooms),
+                        2,
+                        RoundingMode.HALF_UP
+                );
     }
 
 }

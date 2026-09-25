@@ -1,0 +1,335 @@
+.hotel-arrivals-page {
+  padding: 24px;
+}
+
+.arrivals-header {
+  margin-bottom: 18px;
+}
+
+.arrivals-header h1 {
+  margin: 0;
+  font-size: 26px;
+}
+
+.arrivals-header p {
+  margin: 5px 0 0;
+  color: #64748b;
+}
+
+.arrivals-date-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 18px;
+}
+
+.arrivals-date-bar h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.arrivals-date-bar p {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.business-date-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.business-date-label {
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.business-date-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  min-width: 180px;
+  padding: 0 12px;
+
+  background: #ffffff;
+
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+
+  color: #64748b;
+}
+
+.business-date-input:focus-within {
+  border-color: #0f766e;
+  box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.1);
+}
+
+.business-date-input input {
+  width: 100%;
+  padding: 10px 0;
+
+  border: 0;
+  outline: none;
+
+  background: transparent;
+
+  color: #0f172a;
+
+  font-family: inherit;
+  font-size: 14px;
+
+  cursor: pointer;
+}
+
+/* Đảm bảo icon calendar native không bị theme ẩn */
+.business-date-input
+input[type="date"]::-webkit-calendar-picker-indicator {
+  display: block;
+  opacity: 1;
+  cursor: pointer;
+}
+
+.arrivals-summary-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(5, minmax(0, 1fr));
+
+  gap: 14px;
+
+  margin-bottom: 18px;
+}
+
+.arrivals-summary-card {
+  padding: 17px;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.arrivals-summary-card span {
+  display: block;
+
+  margin-bottom: 7px;
+
+  color: #64748b;
+  font-size: 13px;
+}
+
+.arrivals-summary-card strong {
+  color: #0f172a;
+  font-size: 27px;
+}
+
+.arrivals-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  margin-bottom: 14px;
+}
+
+.arrival-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 5px;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 9px;
+}
+
+.arrival-filter-group button {
+  padding: 8px 12px;
+
+  border: 0;
+  border-radius: 6px;
+
+  background: transparent;
+
+  color: #64748b;
+
+  cursor: pointer;
+
+  font-weight: 600;
+}
+
+.arrival-filter-group button:hover {
+  background: #f1f5f9;
+}
+
+.arrival-filter-group button.active {
+  background: #0f766e;
+  color: #ffffff;
+}
+
+.arrivals-search {
+  width: 250px;
+
+  padding: 10px 12px;
+
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+
+  outline: none;
+}
+
+.arrivals-search:focus {
+  border-color: #0f766e;
+}
+
+.arrivals-table-card {
+  overflow: hidden;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.arrivals-table-wrapper {
+  overflow-x: auto;
+}
+
+.arrivals-table {
+  width: 100%;
+
+  border-collapse: collapse;
+}
+
+.arrivals-table th {
+  padding: 12px 14px;
+
+  text-align: left;
+
+  background: #f8fafc;
+
+  border-bottom: 1px solid #e5e7eb;
+
+  color: #64748b;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.arrivals-table td {
+  padding: 14px;
+
+  border-bottom: 1px solid #f1f5f9;
+
+  color: #334155;
+
+  font-size: 14px;
+}
+
+.arrivals-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.arrival-room-type {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.arrival-room-type span {
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.arrival-status {
+  display: inline-flex;
+
+  padding: 5px 9px;
+
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.arrival-status.expected {
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.arrival-status.checked-in {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.arrival-status.cancelled {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.arrival-status.no-show {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.arrivals-loading,
+.arrivals-empty {
+  padding: 32px !important;
+
+  text-align: center !important;
+
+  color: #64748b;
+}
+
+.arrivals-error {
+  margin-bottom: 14px;
+
+  padding: 12px 14px;
+
+  background: #fef2f2;
+
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+
+  color: #b91c1c;
+}
+
+@media (max-width: 1100px) {
+  .arrivals-summary-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .arrivals-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .arrivals-search {
+    width: auto;
+  }
+}
+
+.business-date-calendar-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 0;
+  background: transparent;
+
+  color: #64748b;
+  cursor: pointer;
+}
+
+.business-date-calendar-button:hover {
+  color: #0f766e;
+}

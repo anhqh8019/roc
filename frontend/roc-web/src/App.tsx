@@ -11,20 +11,26 @@ import {
 } from "./auth/AuthContext";
 
 import LoginPage from "./pages/LoginPage";
+
 import HotelDashboardPage from "./pages/HotelDashboardPage";
 import HotelRoomPage from "./pages/HotelRoomPage";
 import HotelInHousePage from "./pages/HotelInHousePage";
-
 import HotelArrivalsPage from "./pages/HotelArrivalsPage";
+import HotelDeparturesPage from "./pages/HotelDeparturesPage";
+
+import AlertsPage from "./pages/AlertsPage";
+import AlertRulesPage from "./pages/AlertRulesPage";
+import AlertHistoryPage from "./pages/AlertHistoryPage";
 import {
   BusinessDateProvider,
 } from "./context/BusinessDateContext";
 
-import HotelDeparturesPage from
-  "./pages/HotelDeparturesPage";
+import { AlertProvider } from "./context/AlertContext";
 
 function AppContent() {
-  const { isAuthenticated } = useAuth();
+
+  const { isAuthenticated } =
+    useAuth();
 
   if (!isAuthenticated) {
     return <LoginPage />;
@@ -32,6 +38,7 @@ function AppContent() {
 
   return (
     <Routes>
+
       <Route
         path="/"
         element={
@@ -44,18 +51,57 @@ function AppContent() {
 
       <Route
         path="/dashboard"
-        element={<HotelDashboardPage />}
+        element={
+          <HotelDashboardPage />
+        }
       />
 
       <Route
         path="/hotel"
-        element={<HotelRoomPage />}
+        element={
+          <HotelRoomPage />
+        }
       />
 
       <Route
         path="/hotel/in-house"
-        element={<HotelInHousePage />}
+        element={
+          <HotelInHousePage />
+        }
       />
+
+      <Route
+        path="/hotel/arrivals"
+        element={
+          <HotelArrivalsPage />
+        }
+      />
+
+      <Route
+        path="/hotel/departures"
+        element={
+          <HotelDeparturesPage />
+        }
+      />
+
+      <Route
+        path="/alerts"
+        element={
+          <AlertsPage />
+        }
+      />
+
+      <Route
+        path="/alerts/rules"
+        element={
+          <AlertRulesPage />
+        }
+      />
+
+      <Route
+  path="/alerts/history"
+  element={<AlertHistoryPage />}
+/>
 
       <Route
         path="*"
@@ -67,15 +113,6 @@ function AppContent() {
         }
       />
 
-      <Route
-  path="/hotel/arrivals"
-  element={<HotelArrivalsPage />}
-/>
-
-<Route
-  path="/hotel/departures"
-  element={<HotelDeparturesPage />}
-/>
     </Routes>
   );
 }
@@ -84,9 +121,11 @@ export default function App() {
   return (
     <AuthProvider>
       <BusinessDateProvider>
-        <BrowserRouter>
-          <AppContent />
-        </BrowserRouter>
+        <AlertProvider>
+          <BrowserRouter>
+            <AppContent />
+          </BrowserRouter>
+        </AlertProvider>
       </BusinessDateProvider>
     </AuthProvider>
   );

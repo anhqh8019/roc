@@ -1,0 +1,53 @@
+.hotel-navigation {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  margin-bottom: 20px;
+  padding: 6px;
+
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+
+  width: fit-content;
+}
+
+.hotel-nav-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 9px 16px;
+
+  border-radius: 7px;
+
+  text-decoration: none;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  color: #64748b;
+
+  transition: 0.15s ease;
+}
+
+.hotel-nav-item:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.hotel-nav-item.active {
+  background: #0f766e;
+  color: #ffffff;
+}
+
+.hotel-nav-item.disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.hotel-nav-item.disabled:hover {
+  background: transparent;
+  color: #64748b;
+}

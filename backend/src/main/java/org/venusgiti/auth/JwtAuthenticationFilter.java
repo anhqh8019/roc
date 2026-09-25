@@ -47,6 +47,8 @@ public class JwtAuthenticationFilter
             return;
         }
 
+
+
         String token =
                 authorization.substring(7);
 
@@ -67,6 +69,8 @@ public class JwtAuthenticationFilter
                     jwtService.extractRole(
                             token
                     );
+
+
 
             var authority =
                     new SimpleGrantedAuthority(

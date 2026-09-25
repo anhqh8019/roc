@@ -54,6 +54,8 @@ export interface RoomStatusResponse {
     | "DIRTY"
     | "INSPECTED";
   inspected: boolean;
+ 
+   floor: string;
 }
 
 export interface RoomStayInfo {

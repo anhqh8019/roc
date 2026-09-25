@@ -9,6 +9,8 @@ import org.venusgiti.dto.RoomStatusResponse;
 import org.venusgiti.util.HousekeepingStatus;
 import org.venusgiti.util.OccupancyStatus;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -272,4 +274,74 @@ public class SmileRoomRepository {
                 ? null
                 : results.getFirst();
     }
+
+    public int countDirtyRooms() {
+
+        String sql = """
+        SELECT COUNT(*)
+        FROM Room r
+        INNER JOIN RoomType rt
+            ON rt.RoomTypeCode = r.RoomTypeCode
+        WHERE rt.NumRoom > 0
+          AND ISNULL(r.HSKPClean, 0) = 0
+        """;
+
+        Integer result =
+                jdbc.queryForObject(
+                        sql,
+                        Map.of(),
+                        Integer.class
+                );
+
+        return result != null
+                ? result
+                : 0;
+    }
+
+    public int countPendingArrivals(
+            LocalDate businessDate
+    ) {
+
+        LocalDateTime from =
+                businessDate.atStartOfDay();
+
+        LocalDateTime to =
+                businessDate
+                        .plusDays(1)
+                        .atStartOfDay();
+
+        String sql = """
+        SELECT COUNT(*)
+        FROM Folio f
+        INNER JOIN Room r
+            ON r.RoomCode = f.RoomCode
+        INNER JOIN RoomType rt
+            ON rt.RoomTypeCode = r.RoomTypeCode
+        WHERE rt.NumRoom > 0
+
+          AND f.ArrivalDate >= :fromDate
+          AND f.ArrivalDate < :toDate
+
+          AND f.CheckInTime IS NULL
+          AND f.CancelTime IS NULL
+        """;
+
+        Map<String, Object> params =
+                Map.of(
+                        "fromDate", from,
+                        "toDate", to
+                );
+
+        Integer result =
+                jdbc.queryForObject(
+                        sql,
+                        params,
+                        Integer.class
+                );
+
+        return result != null
+                ? result
+                : 0;
+    }
+
 }

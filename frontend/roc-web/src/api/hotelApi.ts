@@ -12,7 +12,7 @@ import type {
 
 
 
-const api = axios.create({
+export const api = axios.create({
   baseURL: "/api/v1",
   timeout: 30000,
 });

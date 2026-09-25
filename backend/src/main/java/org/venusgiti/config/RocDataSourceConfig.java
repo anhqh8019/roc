@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
+import javax.sql.DataSource;
+
 @Configuration
 public class RocDataSourceConfig {
 
@@ -38,4 +40,15 @@ public class RocDataSourceConfig {
                 dataSource
         );
     }
+
+    @Bean(name = "rocNamedParameterJdbcTemplate")
+    public NamedParameterJdbcTemplate rocNamedParameterJdbcTemplate(
+            @Qualifier("rocDataSource")
+            DataSource dataSource
+    ) {
+        return new NamedParameterJdbcTemplate(
+                dataSource
+        );
+    }
+
 }
