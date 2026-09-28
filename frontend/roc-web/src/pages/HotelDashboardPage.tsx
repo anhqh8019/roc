@@ -267,7 +267,7 @@ const dirtyLiveRooms =
 
               <div className="revenue-alert-divider" />
 
-              <AlertCenter />
+              <AlertCenter businessDate={businessDate} />
             </div>
 
             {/* =============================================

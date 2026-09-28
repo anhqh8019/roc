@@ -48,29 +48,39 @@ export function AlertProvider({
 
 
   const refreshUnreadCount =
-    useCallback(async () => {
+  useCallback(async () => {
 
-      try {
+    const token =
+      localStorage.getItem("roc_access_token");
 
-        const count =
-          await getAlertUnreadCount();
+    if (!token) {
+      setUnreadCount(0);
+      setLoading(false);
+      return;
+    }
 
-        setUnreadCount(count);
+    try {
+      setLoading(true);
 
-      } catch (error) {
+      const count =
+        await getAlertUnreadCount();
 
-        console.error(
-          "Load alert unread count error:",
-          error
-        );
+      setUnreadCount(count);
 
-      } finally {
+    } catch (error) {
 
-        setLoading(false);
+      console.error(
+        "Load alert unread count error:",
+        error
+      );
 
-      }
+    } finally {
 
-    }, []);
+      setLoading(false);
+
+    }
+
+  }, []);
 
 
   const markAlertRead =

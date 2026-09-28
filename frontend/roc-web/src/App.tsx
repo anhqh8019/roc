@@ -26,6 +26,7 @@ import {
 } from "./context/BusinessDateContext";
 
 import { AlertProvider } from "./context/AlertContext";
+import OnsenDashboardPage from "./pages/OnsenDashboardPage";
 
 function AppContent() {
 
@@ -112,6 +113,11 @@ function AppContent() {
           />
         }
       />
+
+      <Route
+  path="/onsen"
+  element={<OnsenDashboardPage />}
+/>
 
     </Routes>
   );

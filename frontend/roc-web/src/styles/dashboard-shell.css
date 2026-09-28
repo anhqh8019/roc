@@ -1539,3 +1539,556 @@ select {
   font-weight: 700;
   line-height: 1;
 }
+
+/* =========================================================
+   ONSEN DASHBOARD
+   ========================================================= */
+
+.onsen-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  margin-bottom: 16px;
+}
+
+.onsen-page-header h2 {
+  margin: 0;
+
+  color: #f3f7fb;
+
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.onsen-page-header p {
+  margin: 5px 0 0;
+
+  color: #68859c;
+
+  font-size: 11px;
+}
+
+
+/* LIVE BADGE */
+
+.onsen-live-badge {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 7px;
+
+  padding: 7px 11px;
+
+  border: 1px solid
+    rgba(16, 185, 129, 0.25);
+
+  border-radius: 999px;
+
+  background:
+    rgba(16, 185, 129, 0.08);
+
+  color: #34d399;
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+
+/* KPI LIVE */
+
+.onsen-kpi-live {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 5px;
+
+  margin-left: 8px;
+
+  color: #34d399;
+
+  font-size: 8px;
+  font-weight: 700;
+}
+
+
+/* PANEL HEADER */
+
+.onsen-panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  margin-bottom: 16px;
+}
+
+.onsen-panel-header .panel-title {
+  margin-bottom: 4px;
+}
+
+.onsen-panel-header span {
+  color: #64748b;
+
+  font-size: 10px;
+}
+
+
+/* LIVE STATUS */
+
+.onsen-live-status {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 6px;
+
+  color: #34d399;
+
+  font-size: 9px;
+  font-weight: 700;
+}
+
+
+/* OPERATIONS */
+
+.onsen-operation-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 12px;
+}
+
+.onsen-operation-item {
+  min-height: 115px;
+
+  padding: 16px;
+
+  border:
+    1px solid rgba(148, 163, 184, 0.15);
+
+  border-radius: 10px;
+
+  background:
+    rgba(15, 23, 42, 0.35);
+}
+
+.onsen-operation-label {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  color: #94a3b8;
+
+  font-size: 11px;
+}
+
+.onsen-operation-item > strong {
+  display: block;
+
+  margin-top: 10px;
+
+  color: #f8fafc;
+
+  font-size: 28px;
+  line-height: 1;
+}
+
+.onsen-operation-item > span {
+  display: block;
+
+  margin-top: 9px;
+
+  color: #64748b;
+
+  font-size: 10px;
+}
+
+.onsen-operation-live {
+  display: inline-flex !important;
+  align-items: center;
+
+  gap: 5px;
+
+  margin-top: 0 !important;
+
+  padding: 2px 6px;
+
+  border-radius: 999px;
+
+  background:
+    rgba(16, 185, 129, 0.12);
+
+  color: #34d399 !important;
+
+  font-size: 8px !important;
+  font-weight: 700;
+}
+
+
+/* STATUS PANEL */
+
+.onsen-status-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.onsen-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  padding: 12px 0;
+
+  border-bottom:
+    1px solid rgba(255, 255, 255, 0.04);
+}
+
+.onsen-status-row:last-child {
+  border-bottom: 0;
+}
+
+.onsen-status-row span {
+  color: #8299ad;
+
+  font-size: 10px;
+}
+
+.onsen-status-row strong {
+  color: #dce7f0;
+
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.onsen-status-row
+.onsen-status-live {
+  color: #34d399;
+}
+
+
+/* LIVE MAP */
+
+.onsen-map-placeholder {
+  min-height: 230px;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  border:
+    1px dashed rgba(56, 189, 248, 0.2);
+
+  border-radius: 10px;
+
+  background:
+    rgba(15, 23, 42, 0.22);
+}
+
+.onsen-map-placeholder strong {
+  color: #dce7f0;
+
+  font-size: 15px;
+}
+
+.onsen-map-placeholder span {
+  color: #64748b;
+
+  font-size: 11px;
+}
+
+.onsen-map-placeholder small {
+  margin-top: 4px;
+
+  color: #38bdf8;
+
+  font-size: 10px;
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 900px) {
+
+  .onsen-operation-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .onsen-page-header {
+    align-items: flex-start;
+  }
+}
+
+/* =========================================================
+   MOBILE APPLICATION SHELL
+   ========================================================= */
+
+.mobile-header-row {
+  display: none;
+}
+
+.mobile-sidebar-overlay {
+  display: none;
+}
+
+
+/* =========================================================
+   MOBILE <= 768
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+  /* -------------------------
+     SHELL
+     ------------------------- */
+
+  .app-shell {
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .app-main {
+    width: 100%;
+    min-width: 0;
+    margin-left: 0;
+  }
+
+  .app-content {
+    width: 100%;
+    min-width: 0;
+
+    padding: 12px;
+  }
+
+
+  /* -------------------------
+     MOBILE HEADER
+     ------------------------- */
+
+  .mobile-header-row {
+    height: 48px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 0 12px;
+
+    border-bottom: 1px solid #16364a;
+
+    background: #06101c;
+
+    color: #2bb7ff;
+
+    font-size: 14px;
+    font-weight: 800;
+
+    letter-spacing: 0.8px;
+  }
+
+  .mobile-menu-button {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 1px solid #173b50;
+    border-radius: 7px;
+
+    background: #0a2030;
+    color: #b8cfdf;
+
+    cursor: pointer;
+  }
+
+
+  /* -------------------------
+     SIDEBAR DRAWER
+     ------------------------- */
+
+  .sidebar {
+    position: fixed;
+
+    top: 0;
+    bottom: 0;
+    left: 0;
+
+    width: 260px;
+    height: 100vh;
+
+    z-index: 1100;
+
+    transform: translateX(-100%);
+
+    transition:
+      transform 0.22s ease;
+
+    box-shadow:
+      15px 0 40px rgba(0, 0, 0, 0.45);
+  }
+
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+
+  /* -------------------------
+     OVERLAY
+     ------------------------- */
+
+  .mobile-sidebar-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 1090;
+
+    display: block;
+
+    padding: 0;
+    border: 0;
+
+    background:
+      rgba(0, 0, 0, 0.58);
+
+    cursor: default;
+  }
+
+
+  /* -------------------------
+     TOP HEADER
+     ------------------------- */
+
+  .roc-top-header {
+    width: 100%;
+    height: auto;
+    min-height: 54px;
+
+    padding: 8px 12px;
+
+    gap: 8px;
+  }
+
+  .roc-header-left {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .roc-header-title {
+    font-size: 12px;
+  }
+
+  .roc-header-resort {
+    display: none;
+  }
+
+  .roc-header-actions {
+    gap: 6px;
+  }
+
+  .roc-header-separator {
+    display: none;
+  }
+
+  .roc-business-date span {
+    display: none;
+  }
+
+  .roc-business-date input {
+    width: 110px;
+  }
+
+  .roc-user-button {
+    min-width: auto;
+    width: auto;
+  }
+
+  .roc-user-text {
+    display: none;
+  }
+
+
+  /* -------------------------
+     KPI
+     ------------------------- */
+
+  .dashboard-kpi-grid {
+    grid-template-columns: 1fr;
+
+    gap: 10px;
+  }
+
+  .kpi-card {
+    min-height: 100px;
+  }
+
+
+  /* -------------------------
+     DASHBOARD GRID
+     ------------------------- */
+
+  .dashboard-section-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .span-12,
+  .span-8,
+  .span-6,
+  .span-4 {
+    grid-column: 1;
+  }
+
+
+  /* -------------------------
+     HOTEL
+     ------------------------- */
+
+  .hotel-operations-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hotel-operations-header {
+    gap: 10px;
+  }
+
+
+  /* -------------------------
+     ONSEN
+     ------------------------- */
+
+  .onsen-operation-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .onsen-page-header {
+    align-items: flex-start;
+
+    gap: 10px;
+  }
+
+
+  /* -------------------------
+     CHART
+     ------------------------- */
+
+  .trend-chart-grid {
+    grid-template-columns: 1fr;
+  }
+}

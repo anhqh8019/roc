@@ -37,6 +37,7 @@ const menuItems = [
   },
   {
     label: "Tắm khoáng",
+     path: "/onsen",
     icon: Waves,
   },
   {
@@ -83,13 +84,28 @@ const menuItems = [
 ];
 
 
-export default function Sidebar() {
+interface SidebarProps {
+  mobileOpen?: boolean;
+  onClose?: () => void;
+}
+
+export default function Sidebar({
+  mobileOpen = false,
+  onClose,
+}: SidebarProps) {
 
  
 const { unreadCount } = useAlert();
 
   return (
-    <aside className="sidebar">
+    <aside className={
+        `sidebar ${
+          mobileOpen
+            ? "mobile-open"
+            : ""
+        }`
+      }
+    >
 
       <div className="sidebar-brand">
 
@@ -142,16 +158,17 @@ const { unreadCount } = useAlert();
            * dùng NavLink.
            */
           return (
-            <NavLink
-              key={item.label}
-              to={item.path}
-              end
-              className={({ isActive }) =>
-                `sidebar-item ${
-                  isActive ? "active" : ""
-                }`
-              }
-            >
+              <NavLink
+                key={item.label}
+                to={item.path}
+                end
+                onClick={onClose}
+                className={({ isActive }) =>
+                  `sidebar-item ${
+                    isActive ? "active" : ""
+                  }`
+                }
+              >
 
               <Icon
                 size={16}

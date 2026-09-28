@@ -69,9 +69,15 @@ const pageInfo = (() => {
     return {
       title: "Khách sạn",
       subtitle: "Room Operations",
-    };
-
-    
+    };    
+  }
+    if (
+    path.startsWith("/onsen")
+  ) {
+    return {
+      title: "Tắm khoáng",
+      subtitle: "Onsen Operations",
+    };    
   }
 
     if (
@@ -89,7 +95,7 @@ const pageInfo = (() => {
   return {
     title: "Dashboard CEO",
     subtitle:
-      "Resoft Hot Springs Resort",
+      "Venusgiti Hot Springs Resort",
   };
 })();
 

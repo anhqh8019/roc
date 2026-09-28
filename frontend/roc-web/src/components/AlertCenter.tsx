@@ -1,62 +1,103 @@
 // src/components/AlertCenter.tsx
 
-type AlertLevel =
-  | "critical"
-  | "warning"
-  | "info";
+import {
+  useEffect,
+  useState,
+} from "react";
 
-interface AlertItem {
-  id: number;
-  level: AlertLevel;
-  title: string;
-  message: string;
-  time: string;
+import {
+  useNavigate,
+} from "react-router-dom";
+
+import {
+  getOperationAlerts,
+} from "../api/alertApi";
+
+import {
+  useAlert,
+} from "../context/AlertContext";
+
+import type {
+  OperationAlert,
+  OperationAlertsResponse,
+} from "../types/alert";
+
+interface AlertCenterProps {
+  businessDate: string;
 }
 
-const mockAlerts: AlertItem[] = [
-  {
-    id: 1,
-    level: "critical",
-    title: "Công suất phòng thấp",
-    message:
-      "Occupancy ngày 03/09 giảm xuống dưới 10%.",
-    time: "10 phút trước",
-  },
-  {
-    id: 2,
-    level: "warning",
-    title: "RevPAR thấp",
-    message:
-      "RevPAR hiện thấp hơn ngưỡng kỳ vọng.",
-    time: "25 phút trước",
-  },
-  {
-    id: 3,
-    level: "warning",
-    title: "Housekeeping",
-    message:
-      "Hiện còn 20 phòng đang ở trạng thái Dirty.",
-    time: "32 phút trước",
-  },
-  {
-    id: 4,
-    level: "info",
-    title: "Doanh thu F&B",
-    message:
-      "Doanh thu F&B hôm nay đạt 9.600.000 đ.",
-    time: "1 giờ trước",
-  },
-  {
-    id: 5,
-    level: "info",
-    title: "Hệ thống",
-    message:
-      "Đồng bộ dữ liệu Smile hoàn tất.",
-    time: "2 giờ trước",
-  },
-];
+export default function AlertCenter({
+  businessDate,
+}: AlertCenterProps) {
+  const navigate = useNavigate();
+  const { markAlertRead } = useAlert();
 
-export default function AlertCenter() {
+  const [data, setData] =
+    useState<OperationAlertsResponse | null>(null);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState<string | null>(null);
+
+  const [readingStateId, setReadingStateId] =
+    useState<number | null>(null);
+
+  useEffect(() => {
+    async function loadAlerts() {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const result =
+          await getOperationAlerts(businessDate);
+
+        setData(result);
+      } catch (err) {
+        console.error(
+          "Load dashboard alerts error:",
+          err
+        );
+
+        setError(
+          "Không tải được cảnh báo."
+        );
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    void loadAlerts();
+  }, [businessDate]);
+
+  async function handleAlertClick(
+    alert: OperationAlert
+  ) {
+    if (!alert.actionUrl) {
+      return;
+    }
+
+    try {
+      setReadingStateId(alert.stateId);
+
+      await markAlertRead(
+        alert.stateId
+      );
+
+      navigate(alert.actionUrl);
+    } catch (err) {
+      console.error(
+        "Mark dashboard alert as read error:",
+        err
+      );
+    } finally {
+      setReadingStateId(null);
+    }
+  }
+
+  const alerts = data?.alerts ?? [];
+
   return (
     <div className="alert-center">
 
@@ -65,48 +106,101 @@ export default function AlertCenter() {
           <h3>Cảnh báo vận hành</h3>
 
           <span>
-            Dữ liệu giả lập
+            Rule Engine · Business Date {businessDate}
           </span>
         </div>
 
         <div className="alert-count">
-          {mockAlerts.length}
+          {loading ? "…" : data?.total ?? 0}
         </div>
       </div>
 
       <div className="alert-list">
 
-        {mockAlerts.map((alert) => (
-          <div
-            key={alert.id}
-            className={`alert-item alert-${alert.level}`}
-          >
-            <div
-              className="alert-status-dot"
-            />
-
-            <div className="alert-content">
-
-              <div className="alert-item-header">
-                <strong>
-                  {alert.title}
-                </strong>
-
-                <span>
-                  {alert.time}
-                </span>
-              </div>
-
-              <p>
-                {alert.message}
-              </p>
-
-            </div>
+        {loading && (
+          <div className="alert-center-state">
+            Đang tải cảnh báo...
           </div>
-        ))}
+        )}
+
+        {!loading && error && (
+          <div className="alert-center-state">
+            {error}
+          </div>
+        )}
+
+        {!loading &&
+          !error &&
+          alerts.length === 0 && (
+            <div className="alert-center-state">
+              Không có cảnh báo đang kích hoạt.
+            </div>
+          )}
+
+        {!loading &&
+          !error &&
+          alerts.map((alert) => (
+            <button
+              type="button"
+              key={alert.stateId}
+              className={
+                `alert-item ${priorityClass(
+                  alert.priority
+                )}`
+              }
+              onClick={() =>
+                void handleAlertClick(alert)
+              }
+              disabled={
+                !alert.actionUrl ||
+                readingStateId === alert.stateId
+              }
+            >
+              <div
+                className="alert-status-dot"
+              />
+
+              <div className="alert-content">
+
+                <div className="alert-item-header">
+                  <strong>
+                    {alert.title}
+                  </strong>
+
+                  <span>
+                    {alert.live
+                      ? "LIVE"
+                      : businessDate}
+                  </span>
+                </div>
+
+                <p>
+                  {alert.message}
+                </p>
+
+              </div>
+            </button>
+          ))}
 
       </div>
 
     </div>
   );
+}
+
+function priorityClass(
+  priority: OperationAlert["priority"]
+) {
+  switch (priority) {
+    case "P1":
+      return "alert-critical";
+
+    case "P2":
+    case "P3":
+      return "alert-warning";
+
+    case "P4":
+    default:
+      return "alert-info";
+  }
 }
