@@ -23,6 +23,16 @@ import {
    getRooms,
 } from "../api/hotelApi";
 
+import {
+  getOnsenDashboard,
+  getOnsenPackageSummary,
+} from "../api/onsenApi";
+
+import type {
+  OnsenDashboardResponse,
+  OnsenPackageSummary,
+} from "../types/onsen";
+
 import type {
   HotelDashboardResponse,
   RoomStatusResponse,
@@ -66,6 +76,19 @@ export default function HotelDashboardPage() {
 
   const [rooms, setRooms] =
   useState<RoomStatusResponse[]>([]);
+
+  const [onsenData, setOnsenData] =
+  useState<OnsenDashboardResponse | null>(
+    null
+  );
+
+const [
+  onsenPackages,
+  setOnsenPackages,
+] = useState<OnsenPackageSummary[]>([]);
+
+const [onsenLoading, setOnsenLoading] =
+  useState(false);
 
   /*
    * Khi Business Date trên TopHeader thay đổi,
@@ -120,6 +143,59 @@ useEffect(() => {
   loadRooms();
 }, []);
 
+useEffect(() => {
+
+  let cancelled = false;
+
+  async function loadOnsen() {
+
+    try {
+
+      setOnsenLoading(true);
+
+      const [
+        dashboardResult,
+        packageResult,
+      ] = await Promise.all([
+        getOnsenDashboard(businessDate),
+        getOnsenPackageSummary(businessDate),
+      ]);
+
+      if (cancelled) {
+        return;
+      }
+
+      setOnsenData(dashboardResult);
+      setOnsenPackages(packageResult);
+
+    } catch (error) {
+
+      console.error(
+        "Load Onsen CEO snapshot error:",
+        error
+      );
+
+      if (!cancelled) {
+        setOnsenData(null);
+        setOnsenPackages([]);
+      }
+
+    } finally {
+
+      if (!cancelled) {
+        setOnsenLoading(false);
+      }
+    }
+  }
+
+  loadOnsen();
+
+  return () => {
+    cancelled = true;
+  };
+
+}, [businessDate]);
+
 const totalLiveRooms = rooms.length;
 
 const occupiedLiveRooms =
@@ -139,6 +215,13 @@ const dirtyLiveRooms =
     (room) =>
       room.housekeepingStatus === "DIRTY"
   ).length;
+
+const totalOnsenPackageVisits =
+  onsenPackages.reduce(
+    (sum, item) =>
+      sum + item.guests,
+    0
+  );
 
   return (
     <AppLayout>
@@ -378,17 +461,96 @@ const dirtyLiveRooms =
             {/* =============================================
                 ONSEN PLACEHOLDER
                 ============================================= */}
+<div className="dashboard-card span-6">
 
-            <div className="dashboard-card span-6">
-              <h3 className="panel-title">
-                Khu tắm khoáng
-              </h3>
+  <div className="ceo-onsen-header">
 
-              <div className="placeholder-panel">
-                Onsen Live Map -
-                Coming soon
-              </div>
-            </div>
+    <div>
+      <h3 className="panel-title">
+        Khu tắm khoáng
+      </h3>
+
+      <div className="ceo-onsen-date">
+        Business Date:{" "}
+        {formatBusinessDate(
+          businessDate
+        )}
+      </div>
+    </div>
+
+    <button
+      type="button"
+      className="hotel-operations-link"
+      onClick={() =>
+        navigate("/onsen")
+      }
+    >
+      Xem chi tiết →
+    </button>
+
+  </div>
+
+
+  {onsenLoading && (
+    <div className="ceo-onsen-loading">
+      Đang tải dữ liệu Onsen...
+    </div>
+  )}
+
+
+  {!onsenLoading && onsenData && (
+    <>
+
+      <div className="ceo-onsen-kpis">
+
+        <CeoOnsenKpi
+          label="Đang sử dụng"
+          value={onsenData.currentGuests}
+          live={onsenData.live}
+        />
+
+        <CeoOnsenKpi
+          label="Check-in"
+          value={onsenData.checkIns}
+        />
+
+        <CeoOnsenKpi
+          label="Check-out"
+          value={onsenData.checkOuts}
+        />
+
+      </div>
+
+
+      <div className="ceo-onsen-package-header">
+
+        <span>
+          Lượt theo gói
+        </span>
+
+        <strong>
+          {totalOnsenPackageVisits} lượt
+        </strong>
+
+      </div>
+
+
+      <CeoOnsenPackageList
+        items={onsenPackages}
+      />
+
+    </>
+  )}
+
+
+  {!onsenLoading &&
+    !onsenData && (
+      <div className="ceo-onsen-empty">
+        Không có dữ liệu Onsen
+      </div>
+    )}
+
+</div>
 
             {/* =============================================
                 FUTURE PANEL
@@ -570,5 +732,143 @@ function OperationItem({
         {detail}
       </span>
     </button>
+  );
+}
+
+function CeoOnsenKpi({
+  label,
+  value,
+  live = false,
+}: {
+  label: string;
+  value: number;
+  live?: boolean;
+}) {
+
+  return (
+    <div className="ceo-onsen-kpi">
+
+      <div className="ceo-onsen-kpi-label">
+        {label}
+
+        {live && (
+          <span className="ceo-onsen-live">
+            <span className="live-pulse-dot" />
+            LIVE
+          </span>
+        )}
+      </div>
+
+      <strong>
+        {value}
+      </strong>
+
+    </div>
+  );
+}
+
+
+function CeoOnsenPackageList({
+  items,
+}: {
+  items: OnsenPackageSummary[];
+}) {
+
+  if (items.length === 0) {
+    return (
+      <div className="ceo-onsen-no-package">
+        Không có lượt sử dụng
+        trong ngày này.
+      </div>
+    );
+  }
+
+  const topItems =
+    items.slice(0, 5);
+
+  const maxGuests =
+    Math.max(
+      ...topItems.map(
+        (item) => item.guests
+      ),
+      1
+    );
+
+  const total =
+    items.reduce(
+      (sum, item) =>
+        sum + item.guests,
+      0
+    );
+
+  return (
+    <div className="ceo-onsen-package-list">
+
+      {topItems.map((item) => {
+
+        const width =
+          (item.guests /
+            maxGuests) *
+          100;
+
+        const percent =
+          total > 0
+            ? (item.guests /
+                total) *
+              100
+            : 0;
+
+        return (
+          <div
+            key={item.packageCode}
+            className="ceo-onsen-package-row"
+          >
+
+            <div className="ceo-onsen-package-info">
+
+              <div className="ceo-onsen-package-name">
+
+                <strong>
+                  {item.packageCode}
+                </strong>
+
+                <span>
+                  {item.packageName ??
+                    item.packageCode}
+                </span>
+
+              </div>
+
+              <div className="ceo-onsen-package-value">
+
+                <strong>
+                  {item.guests}
+                </strong>
+
+                <span>
+                  {percent.toFixed(1)}%
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <div className="ceo-onsen-package-track">
+
+              <div
+                className="ceo-onsen-package-fill"
+                style={{
+                  width: `${width}%`,
+                }}
+              />
+
+            </div>
+
+          </div>
+        );
+      })}
+
+    </div>
   );
 }

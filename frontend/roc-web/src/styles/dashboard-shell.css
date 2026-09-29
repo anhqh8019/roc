@@ -2092,3 +2092,411 @@ select {
     grid-template-columns: 1fr;
   }
 }
+
+/* =========================================================
+   ONSEN PACKAGE SUMMARY
+   ========================================================= */
+
+.onsen-package-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  margin-top: 18px;
+}
+
+.onsen-package-row {
+  width: 100%;
+}
+
+.onsen-package-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  margin-bottom: 8px;
+}
+
+.onsen-package-header > div:first-child {
+  display: flex;
+  align-items: baseline;
+
+  gap: 10px;
+
+  min-width: 0;
+}
+
+.onsen-package-header strong {
+  color: #e8f4fc;
+
+  font-size: 14px;
+}
+
+.onsen-package-name {
+  color: #7894a8;
+
+  font-size: 12px;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.onsen-package-value {
+  display: flex;
+  align-items: baseline;
+
+  gap: 7px;
+
+  white-space: nowrap;
+}
+
+.onsen-package-value strong {
+  color: #33c2ff;
+
+  font-size: 18px;
+}
+
+.onsen-package-value span {
+  color: #68869b;
+
+  font-size: 11px;
+}
+
+.onsen-package-bar {
+  width: 100%;
+  height: 7px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background: #10283a;
+}
+
+.onsen-package-bar-fill {
+  height: 100%;
+
+  border-radius: inherit;
+
+  background:
+    linear-gradient(
+      90deg,
+      #168bd2,
+      #36c8ff
+    );
+
+  transition: width 0.3s ease;
+}
+
+.onsen-package-meta {
+  display: flex;
+
+  gap: 18px;
+
+  margin-top: 6px;
+
+  color: #68869b;
+
+  font-size: 11px;
+}
+
+.onsen-package-total {
+  padding: 5px 9px;
+
+  border: 1px solid #17465e;
+  border-radius: 6px;
+
+  background: #092235;
+
+  color: #40c8ff;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.onsen-empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 180px;
+
+  color: #68869b;
+
+  font-size: 13px;
+}
+
+
+/* Mobile */
+
+@media (max-width: 768px) {
+
+  .onsen-package-header > div:first-child {
+    display: block;
+  }
+
+  .onsen-package-name {
+    display: block;
+
+    margin-top: 3px;
+
+    white-space: normal;
+  }
+
+  .onsen-package-meta {
+    gap: 12px;
+  }
+}
+
+/* =========================================================
+   CEO ONSEN SNAPSHOT
+   ========================================================= */
+
+.ceo-onsen-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  margin-bottom: 16px;
+}
+
+.ceo-onsen-header .panel-title {
+  margin-bottom: 5px;
+}
+
+.ceo-onsen-date {
+  color: #64748b;
+
+  font-size: 10px;
+}
+
+
+/* KPI */
+
+.ceo-onsen-kpis {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 9px;
+
+  margin-bottom: 18px;
+}
+
+.ceo-onsen-kpi {
+  min-width: 0;
+
+  padding: 12px;
+
+  border:
+    1px solid rgba(
+      148,
+      163,
+      184,
+      0.14
+    );
+
+  border-radius: 8px;
+
+  background:
+    rgba(15, 23, 42, 0.32);
+}
+
+.ceo-onsen-kpi-label {
+  display: flex;
+  align-items: center;
+
+  gap: 6px;
+
+  color: #8299ad;
+
+  font-size: 10px;
+}
+
+.ceo-onsen-kpi > strong {
+  display: block;
+
+  margin-top: 7px;
+
+  color: #f8fafc;
+
+  font-size: 22px;
+}
+
+.ceo-onsen-live {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 4px;
+
+  color: #34d399;
+
+  font-size: 7px;
+  font-weight: 700;
+}
+
+
+/* PACKAGE HEADER */
+
+.ceo-onsen-package-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 12px;
+
+  color: #8299ad;
+
+  font-size: 10px;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.3px;
+}
+
+.ceo-onsen-package-header strong {
+  color: #38bdf8;
+
+  font-size: 11px;
+}
+
+
+/* PACKAGE LIST */
+
+.ceo-onsen-package-list {
+  display: flex;
+  flex-direction: column;
+
+  gap: 11px;
+}
+
+.ceo-onsen-package-row {
+  min-width: 0;
+}
+
+.ceo-onsen-package-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin-bottom: 5px;
+}
+
+.ceo-onsen-package-name {
+  min-width: 0;
+
+  display: flex;
+  align-items: baseline;
+
+  gap: 8px;
+}
+
+.ceo-onsen-package-name strong {
+  flex: 0 0 auto;
+
+  color: #e7f4fc;
+
+  font-size: 10px;
+}
+
+.ceo-onsen-package-name span {
+  overflow: hidden;
+
+  color: #6f879d;
+
+  font-size: 9px;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.ceo-onsen-package-value {
+  display: flex;
+  align-items: baseline;
+
+  gap: 6px;
+
+  flex: 0 0 auto;
+}
+
+.ceo-onsen-package-value strong {
+  color: #eaf5fc;
+
+  font-size: 11px;
+}
+
+.ceo-onsen-package-value span {
+  color: #64748b;
+
+  font-size: 8px;
+}
+
+
+/* BAR */
+
+.ceo-onsen-package-track {
+  width: 100%;
+  height: 5px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background: #10283a;
+}
+
+.ceo-onsen-package-fill {
+  height: 100%;
+
+  border-radius: inherit;
+
+  background:
+    linear-gradient(
+      90deg,
+      #168bd2,
+      #36c8ff
+    );
+}
+
+
+/* STATES */
+
+.ceo-onsen-loading,
+.ceo-onsen-empty,
+.ceo-onsen-no-package {
+  min-height: 90px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #64748b;
+
+  font-size: 10px;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 768px) {
+
+  .ceo-onsen-kpis {
+    grid-template-columns: 1fr;
+  }
+
+  .ceo-onsen-header {
+    gap: 10px;
+  }
+
+  .ceo-onsen-package-name span {
+    white-space: normal;
+  }
+}

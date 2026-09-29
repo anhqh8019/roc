@@ -5,20 +5,29 @@ import {
 
 import AppLayout from "../layout/AppLayout";
 
-import {
-  getOnsenDashboard,
-} from "../api/onsenApi";
-
-import type {
-  OnsenDashboardResponse,
-} from "../types/onsen";
-
+ 
 import {
   useBusinessDate,
 } from "../context/BusinessDateContext";
 
+import type {
+  OnsenDashboardResponse,
+  OnsenPackageSummary,
+} from "../types/onsen";
+
+import {
+  getOnsenDashboard,
+  getOnsenPackageSummary,
+} from "../api/onsenApi";
+
 
 export default function OnsenDashboardPage() {
+
+
+  const [
+  packageSummary,
+  setPackageSummary,
+] = useState<OnsenPackageSummary[]>([]);
 
   const {
     businessDate,
@@ -38,41 +47,58 @@ export default function OnsenDashboardPage() {
 
   useEffect(() => {
 
-    async function loadDashboard() {
+  let cancelled = false;
 
-      try {
+  async function loadData() {
 
-        setLoading(true);
-        setError(null);
+    try {
 
-        const result =
-          await getOnsenDashboard(
-            businessDate
-          );
+      setLoading(true);
+      setError(null);
 
-        setData(result);
+      const [
+        dashboardData,
+        packageData,
+      ] = await Promise.all([
+        getOnsenDashboard(businessDate),
+        getOnsenPackageSummary(businessDate),
+      ]);
 
-      } catch (error) {
+      if (cancelled) {
+        return;
+      }
 
-        console.error(
-          "Load Onsen dashboard error:",
-          error
-        );
+      setData(dashboardData);
+      setPackageSummary(packageData);
 
+    } catch (error) {
+
+      console.error(
+        "Failed to load Onsen dashboard",
+        error
+      );
+
+      if (!cancelled) {
         setError(
-          "Không tải được dữ liệu tắm khoáng"
+          "Không thể tải dữ liệu Tắm khoáng."
         );
+      }
 
-      } finally {
+    } finally {
 
+      if (!cancelled) {
         setLoading(false);
-
       }
     }
+  }
 
-    void loadDashboard();
+  loadData();
 
-  }, [businessDate]);
+  return () => {
+    cancelled = true;
+  };
+
+}, [businessDate]);
 
 
   return (
@@ -242,41 +268,35 @@ export default function OnsenDashboardPage() {
 
             {/* LIVE MAP PLACEHOLDER */}
 
-            <div className="dashboard-card span-12">
+             <section className="dashboard-card span-8">
 
-              <div className="onsen-panel-header">
+  <div className="panel-header">
 
-                <div>
-                  <h3 className="panel-title">
-                    Sơ đồ khu tắm khoáng
-                  </h3>
+    <div>
+      <div className="panel-title">
+        Lượt khách theo gói
+      </div>
 
-                  <span>
-                    Zone / Pool Operations
-                  </span>
-                </div>
+      <div className="panel-subtitle">
+        Cơ cấu sử dụng dịch vụ trong ngày
+      </div>
+    </div>
 
-              </div>
+    <div className="onsen-package-total">
+      {packageSummary.reduce(
+        (sum, item) =>
+          sum + item.guests,
+        0
+      )} lượt
+    </div>
 
-              <div className="onsen-map-placeholder">
+  </div>
 
-                <strong>
-                  Onsen Live Map
-                </strong>
+  <PackageSummary
+    items={packageSummary}
+  />
 
-                <span>
-                  Chưa có dữ liệu vị trí khách
-                  theo từng khu / bể.
-                </span>
-
-                <small>
-                  Tổng khách hiện tại:{" "}
-                  {data.currentGuests}
-                </small>
-
-              </div>
-
-            </div>
+</section>     
 
           </div>
         </>
@@ -392,6 +412,104 @@ function StatusRow({
       >
         {value}
       </strong>
+
+    </div>
+  );
+}
+
+function PackageSummary({
+  items,
+}: {
+  items: OnsenPackageSummary[];
+}) {
+
+  const maxGuests = Math.max(
+    ...items.map((item) => item.guests),
+    1
+  );
+
+  const totalGuests = items.reduce(
+    (sum, item) => sum + item.guests,
+    0
+  );
+
+  if (items.length === 0) {
+    return (
+      <div className="onsen-empty-state">
+        Không có lượt khách theo gói
+        trong ngày này.
+      </div>
+    );
+  }
+
+  return (
+    <div className="onsen-package-list">
+
+      {items.map((item) => {
+
+        const barWidth =
+          (item.guests / maxGuests) * 100;
+
+        const percentage =
+          totalGuests > 0
+            ? (item.guests / totalGuests) * 100
+            : 0;
+
+        return (
+          <div
+            key={item.packageCode}
+            className="onsen-package-row"
+          >
+
+            <div className="onsen-package-header">
+
+              <div>
+                <strong>
+                  {item.packageCode}
+                </strong>
+
+                <span className="onsen-package-name">
+                  {item.packageName ??
+                    item.packageCode}
+                </span>
+              </div>
+
+              <div className="onsen-package-value">
+                <strong>
+                  {item.guests}
+                </strong>
+
+                <span>
+                  {percentage.toFixed(1)}%
+                </span>
+              </div>
+
+            </div>
+
+            <div className="onsen-package-bar">
+
+              <div
+                className="onsen-package-bar-fill"
+                style={{
+                  width: `${barWidth}%`,
+                }}
+              />
+
+            </div>
+
+            <div className="onsen-package-meta">
+              <span>
+                Check-in: {item.checkIns}
+              </span>
+
+              <span>
+                Check-out: {item.checkOuts}
+              </span>
+            </div>
+
+          </div>
+        );
+      })}
 
     </div>
   );
