@@ -2500,3 +2500,117 @@ select {
     white-space: normal;
   }
 }
+
+/* =========================================================
+   CEO ONSEN TREND
+   ========================================================= */
+
+.ceo-onsen-header-actions {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+}
+
+.ceo-onsen-period-select {
+  height: 28px;
+
+  padding: 0 26px 0 9px;
+
+  border: 1px solid #17465e;
+  border-radius: 6px;
+
+  outline: none;
+
+  background: #092235;
+
+  color: #b8d2e3;
+
+  font-size: 9px;
+
+  cursor: pointer;
+}
+
+.ceo-onsen-period-select:hover {
+  border-color: #2384ad;
+}
+
+.ceo-onsen-period-select:focus {
+  border-color: #22b8f0;
+}
+
+
+/* Chart */
+
+.ceo-onsen-trend {
+  width: 100%;
+  height: 145px;
+
+  margin-top: 4px;
+  margin-bottom: 14px;
+
+  padding-top: 2px;
+}
+
+.ceo-onsen-trend-state {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #64748b;
+
+  font-size: 10px;
+}
+
+
+/* Tooltip */
+
+.ceo-onsen-tooltip {
+  padding: 8px 10px;
+
+  border: 1px solid #17465e;
+  border-radius: 6px;
+
+  background: #071827;
+
+  box-shadow:
+    0 8px 24px
+    rgba(0, 0, 0, 0.35);
+
+  color: #8299ad;
+
+  font-size: 9px;
+}
+
+.ceo-onsen-tooltip strong {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #22c7ff;
+
+  font-size: 11px;
+}
+
+
+/* Mobile */
+
+@media (max-width: 768px) {
+
+  .ceo-onsen-header {
+    flex-direction: column;
+  }
+
+  .ceo-onsen-header-actions {
+    width: 100%;
+
+    justify-content: space-between;
+  }
+
+  .ceo-onsen-trend {
+    height: 180px;
+  }
+}

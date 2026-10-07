@@ -3,9 +3,29 @@ import { api } from "./hotelApi";
 import type {
   OnsenDashboardResponse,
   OnsenPackageSummary,
-  OnsenCurrentGuest,
+  OnsenCurrentGuest, 
+  OnsenTrendItem,
+  OnsenTrendPeriod,
 } from "../types/onsen";
 
+export async function getOnsenTrend(
+  businessDate: string,
+  period: OnsenTrendPeriod
+): Promise<OnsenTrendItem[]> {
+
+  const response =
+    await api.get<OnsenTrendItem[]>(
+      "/onsen/trend",
+      {
+        params: {
+          date: businessDate,
+          period,
+        },
+      }
+    );
+
+  return response.data;
+}
 
 export async function getOnsenDashboard(
   businessDate: string

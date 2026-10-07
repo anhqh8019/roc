@@ -227,4 +227,64 @@ public class OnsenRepository {
                 }
         );
     }
+
+    public List<OnsenTrendResponse> findGuestTrend(
+            LocalDate fromDate,
+            LocalDate toDate
+    ) {
+
+        LocalDateTime startDate =
+                fromDate.atStartOfDay();
+
+        LocalDateTime endDate =
+                toDate.plusDays(1).atStartOfDay();
+
+        String sql = """
+        SELECT
+            CAST(ae.CheckInTime AS date) AS BusinessDate,
+            COUNT(DISTINCT ae.CardNo) AS Guests
+
+        FROM SMILE_ONSEN.dbo.AdditionalExt ae
+
+        WHERE ae.CheckInTime >= :startDate
+          AND ae.CheckInTime < :endDate
+
+          AND ISNULL(ae.IsCancel, 0) = 0
+
+          AND ae.CardNo IS NOT NULL
+          AND LTRIM(RTRIM(ae.CardNo)) <> ''
+
+        GROUP BY
+            CAST(ae.CheckInTime AS date)
+
+        ORDER BY
+            BusinessDate
+        """;
+
+        MapSqlParameterSource params =
+                new MapSqlParameterSource()
+                        .addValue(
+                                "startDate",
+                                startDate
+                        )
+                        .addValue(
+                                "endDate",
+                                endDate
+                        );
+
+        return jdbc.query(
+                sql,
+                params,
+                (rs, rowNum) ->
+                        new OnsenTrendResponse(
+                                rs.getDate(
+                                        "BusinessDate"
+                                ).toLocalDate(),
+
+                                rs.getInt(
+                                        "Guests"
+                                )
+                        )
+        );
+    }
 }

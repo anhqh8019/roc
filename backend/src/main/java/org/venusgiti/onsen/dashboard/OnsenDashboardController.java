@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.venusgiti.integration.onsen.OnsenCurrentGuestResponse;
 import org.venusgiti.integration.onsen.OnsenPackageSummaryResponse;
+import org.venusgiti.integration.onsen.OnsenTrendResponse;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -53,6 +54,27 @@ public class OnsenDashboardController {
     ) {
         return service.getPackageSummary(
                 businessDate
+        );
+    }
+
+    @GetMapping("/trend")
+    public List<OnsenTrendResponse> getTrend(
+            @RequestParam("date")
+            @DateTimeFormat(
+                    iso = DateTimeFormat.ISO.DATE
+            )
+            LocalDate businessDate,
+
+            @RequestParam(
+                    value = "period",
+                    defaultValue = "WEEK"
+            )
+            String period
+    ) {
+
+        return service.getGuestTrend(
+                businessDate,
+                period
         );
     }
 }

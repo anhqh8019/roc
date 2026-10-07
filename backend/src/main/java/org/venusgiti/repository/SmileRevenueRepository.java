@@ -47,80 +47,86 @@ public class SmileRevenueRepository {
     public RevenueSummary getRevenue(LocalDate date) {
 
         String sql = """
-    SELECT
-        ISNULL(SUM(CASE
-            WHEN TransactionCode = 400
-            THEN TransactionAmount ELSE 0
-        END), 0) AS roomGrossRevenue,
+        SELECT
+            -- ROOM
+            ISNULL(SUM(CASE
+                WHEN tc.DeptCode = 120
+                THEN ft.TransactionAmount
+                ELSE 0
+            END), 0) AS roomGrossRevenue,
 
-        ISNULL(SUM(CASE
-            WHEN TransactionCode = 400
-            THEN SubAmount ELSE 0
-        END), 0) AS roomNetRevenue,
+            ISNULL(SUM(CASE
+                WHEN tc.DeptCode = 120
+                THEN ft.SubAmount
+                ELSE 0
+            END), 0) AS roomNetRevenue,
 
-        ISNULL(SUM(CASE
-            WHEN TransactionCode IN (510, 560, 590)
-            THEN TransactionAmount ELSE 0
-        END), 0) AS foodBeverageRevenue,
+            -- F&B
+            ISNULL(SUM(CASE
+                WHEN tc.DeptCode IN (
+                    210, 220, 230, 250,
+                    260, 280, 290
+                )
+                THEN ft.SubAmount
+                ELSE 0
+            END), 0) AS foodBeverageRevenue,
 
-        ISNULL(SUM(CASE
-            WHEN TransactionCode IN (655, 666)
-            THEN TransactionAmount ELSE 0
-        END), 0) AS onsenRevenue,
+            -- ONSEN
+            ISNULL(SUM(CASE
+                WHEN tc.DeptCode = 405
+                THEN ft.SubAmount
+                ELSE 0
+            END), 0) AS onsenRevenue,
 
-        ISNULL(SUM(CASE
-            WHEN TransactionCode IN (630, 675, 676)
-            THEN TransactionAmount ELSE 0
-        END), 0) AS otherRevenue,
+            -- OTHER
+            ISNULL(SUM(CASE
+                WHEN tc.DeptCode NOT IN (
+                    120,
+                    210, 220, 230, 250,
+                    260, 280, 290,
+                    405
+                )
+                THEN ft.SubAmount
+                ELSE 0
+            END), 0) AS otherRevenue,
 
-        ISNULL(SUM(CASE
-            WHEN TransactionCode IN (
-                400,
-                510, 560, 590,
-                655, 666,
-                630, 675, 676
-            )
-            THEN TransactionAmount ELSE 0
-        END), 0) AS totalGrossRevenue,
+            -- TOTAL GROSS
+            ISNULL(SUM(ft.TransactionAmount), 0)
+                AS totalGrossRevenue,
 
-        ISNULL(SUM(CASE
-            WHEN TransactionCode IN (
-                400,
-                510, 560, 590,
-                655, 666,
-                630, 675, 676
-            )
-            THEN SubAmount ELSE 0
-        END), 0) AS totalNetRevenue,
+            -- TOTAL NET
+            ISNULL(SUM(ft.SubAmount), 0)
+                AS totalNetRevenue,
 
-        ISNULL(SUM(CASE
-            WHEN TransactionCode IN (
-                400,
-                510, 560, 590,
-                655, 666,
-                630, 675, 676
-            )
-            THEN ServiceCharge ELSE 0
-        END), 0) AS serviceCharge,
+            -- SERVICE CHARGE
+            ISNULL(SUM(ft.ServiceCharge), 0)
+                AS serviceCharge,
 
-        ISNULL(SUM(CASE
-            WHEN TransactionCode IN (
-                400,
-                510, 560, 590,
-                655, 666,
-                630, 675, 676
-            )
-            THEN TaxAmount ELSE 0
-        END), 0) AS tax
+            -- TAX
+            ISNULL(SUM(ft.TaxAmount), 0)
+                AS tax
 
-    FROM FolioTransaction
-    WHERE CAST(TransactionDate AS date) = :businessDate
-      AND ISNULL(VoidTransactionFlag, 0) = 0
-    """;
+        FROM FolioTransaction ft
+
+        INNER JOIN TransactionCode tc
+            ON tc.TransactionCode = ft.TransactionCode
+           AND tc.TransactionSubCode = ft.TransactionSubCode
+
+        WHERE ft.TransactionDate >= :startDate
+          AND ft.TransactionDate < :endDate
+
+          AND ISNULL(ft.VoidTransactionFlag, 0) = 0
+
+          AND tc.TransactionGroup = 1
+          AND tc.DeptCode IS NOT NULL
+        """;
 
         return jdbc.queryForObject(
                 sql,
-                Map.of("businessDate", date),
+                Map.of(
+                        "startDate", date,
+                        "endDate", date.plusDays(1)
+                ),
                 (rs, rowNum) -> new RevenueSummary(
                         rs.getBigDecimal("roomGrossRevenue"),
                         rs.getBigDecimal("roomNetRevenue"),
@@ -157,42 +163,47 @@ public class SmileRevenueRepository {
             LocalDate from,
             LocalDate to
     ) {
+
         String sql = """
         SELECT
-            CAST(TransactionDate AS date) AS businessDate,
+            CAST(ft.TransactionDate AS date)
+                AS businessDate,
 
             ISNULL(SUM(CASE
-                WHEN TransactionCode = 400
-                THEN SubAmount ELSE 0
+                WHEN tc.DeptCode = 120
+                THEN ft.SubAmount
+                ELSE 0
             END), 0) AS roomNetRevenue,
 
-            ISNULL(SUM(CASE
-                WHEN TransactionCode IN (
-                    400,
-                    510, 560, 590,
-                    655, 666,
-                    630, 675, 676
-                )
-                THEN SubAmount ELSE 0
-            END), 0) AS totalNetRevenue
+            ISNULL(SUM(ft.SubAmount), 0)
+                AS totalNetRevenue
 
-        FROM FolioTransaction
+        FROM FolioTransaction ft
 
-        WHERE CAST(TransactionDate AS date)
-              BETWEEN :fromDate AND :toDate
+        INNER JOIN TransactionCode tc
+            ON tc.TransactionCode = ft.TransactionCode
+           AND tc.TransactionSubCode = ft.TransactionSubCode
 
-          AND ISNULL(VoidTransactionFlag, 0) = 0
+        WHERE ft.TransactionDate >= :fromDate
+          AND ft.TransactionDate < :endDate
 
-        GROUP BY CAST(TransactionDate AS date)
+          AND ISNULL(ft.VoidTransactionFlag, 0) = 0
 
-        ORDER BY businessDate
+          AND tc.TransactionGroup = 1
+          AND tc.DeptCode IS NOT NULL
+
+        GROUP BY
+            CAST(ft.TransactionDate AS date)
+
+        ORDER BY
+            businessDate
         """;
 
         return jdbc.query(
                 sql,
                 Map.of(
                         "fromDate", from,
-                        "toDate", to
+                        "endDate", to.plusDays(1)
                 ),
                 (rs, rowNum) -> new DailyRevenue(
                         rs.getDate("businessDate")

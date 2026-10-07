@@ -21,3 +21,13 @@ export interface OnsenCurrentGuest {
   checkInTime: string;
   durationMinutes: number;
 }
+
+export type OnsenTrendPeriod =
+  | "WEEK"
+  | "MONTH"
+  | "THREE_MONTHS";
+
+export interface OnsenTrendItem {
+  date: string;
+  guests: number;
+}

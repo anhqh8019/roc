@@ -26,11 +26,15 @@ import {
 import {
   getOnsenDashboard,
   getOnsenPackageSummary,
+   getOnsenTrend,
 } from "../api/onsenApi";
 
 import type {
   OnsenDashboardResponse,
-  OnsenPackageSummary,
+  OnsenPackageSummary, 
+    OnsenTrendItem,
+  OnsenTrendPeriod,
+
 } from "../types/onsen";
 
 import type {
@@ -41,6 +45,16 @@ import type {
 import {
   useBusinessDate,
 } from "../context/BusinessDateContext";
+
+import {
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+} from "recharts";
 
 function formatMoney(value: number) {
   return new Intl.NumberFormat(
@@ -76,6 +90,15 @@ export default function HotelDashboardPage() {
 
   const [rooms, setRooms] =
   useState<RoomStatusResponse[]>([]);
+
+  const [onsenTrendPeriod, setOnsenTrendPeriod] =
+  useState<OnsenTrendPeriod>("WEEK");
+
+const [onsenTrend, setOnsenTrend] =
+  useState<OnsenTrendItem[]>([]);
+
+const [onsenTrendLoading, setOnsenTrendLoading] =
+  useState(false);
 
   const [onsenData, setOnsenData] =
   useState<OnsenDashboardResponse | null>(
@@ -122,6 +145,58 @@ const [onsenLoading, setOnsenLoading] =
 
     loadDashboard();
   }, [businessDate]);
+
+  /**Onsen**/
+useEffect(() => {
+
+  let cancelled = false;
+
+  async function loadOnsenTrend() {
+
+    try {
+
+      setOnsenTrendLoading(true);
+
+      const result =
+        await getOnsenTrend(
+          businessDate,
+          onsenTrendPeriod
+        );
+
+      if (!cancelled) {
+        setOnsenTrend(result);
+      }
+
+    } catch (error) {
+
+      console.error(
+        "Load Onsen trend error:",
+        error
+      );
+
+      if (!cancelled) {
+        setOnsenTrend([]);
+      }
+
+    } finally {
+
+      if (!cancelled) {
+        setOnsenTrendLoading(false);
+      }
+    }
+  }
+
+  loadOnsenTrend();
+
+  return () => {
+    cancelled = true;
+  };
+
+}, [
+  businessDate,
+  onsenTrendPeriod,
+]);
+
 
   /*
  * Room Operations là dữ liệu LIVE.
@@ -463,20 +538,44 @@ const totalOnsenPackageVisits =
                 ============================================= */}
 <div className="dashboard-card span-6">
 
-  <div className="ceo-onsen-header">
+<div className="ceo-onsen-header">
 
-    <div>
-      <h3 className="panel-title">
-        Khu tắm khoáng
-      </h3>
+  <div>
+    <h3 className="panel-title">
+      Khu tắm khoáng
+    </h3>
 
-      <div className="ceo-onsen-date">
-        Business Date:{" "}
-        {formatBusinessDate(
-          businessDate
-        )}
-      </div>
+    <div className="ceo-onsen-date">
+      Business Date:{" "}
+      {formatBusinessDate(businessDate)}
     </div>
+  </div>
+
+
+  <div className="ceo-onsen-header-actions">
+
+    <select
+      className="ceo-onsen-period-select"
+      value={onsenTrendPeriod}
+      onChange={(event) =>
+        setOnsenTrendPeriod(
+          event.target.value as OnsenTrendPeriod
+        )
+      }
+    >
+      <option value="WEEK">
+        1 tuần
+      </option>
+
+      <option value="MONTH">
+        1 tháng
+      </option>
+
+      <option value="THREE_MONTHS">
+        3 tháng
+      </option>
+    </select>
+
 
     <button
       type="button"
@@ -489,6 +588,108 @@ const totalOnsenPackageVisits =
     </button>
 
   </div>
+
+</div>
+
+<div className="ceo-onsen-trend">
+
+  {onsenTrendLoading ? (
+
+    <div className="ceo-onsen-trend-state">
+      Đang tải xu hướng...
+    </div>
+
+  ) : onsenTrend.length === 0 ? (
+
+    <div className="ceo-onsen-trend-state">
+      Không có dữ liệu xu hướng
+    </div>
+
+  ) : (
+
+    <ResponsiveContainer
+      width="100%"
+      height="100%"
+    >
+      <LineChart
+        data={onsenTrend}
+        margin={{
+          top: 12,
+          right: 8,
+          left: -18,
+          bottom: 0,
+        }}
+      >
+
+        <CartesianGrid
+          stroke="rgba(148,163,184,0.10)"
+          strokeDasharray="3 3"
+          vertical={false}
+        />
+
+        <XAxis
+          dataKey="date"
+          tickFormatter={(value) =>
+            formatOnsenTrendDate(value)
+          }
+          tick={{
+            fill: "#64748b",
+            fontSize: 8,
+          }}
+          axisLine={false}
+          tickLine={false}
+          minTickGap={
+            onsenTrendPeriod === "WEEK"
+              ? 10
+              : onsenTrendPeriod === "MONTH"
+              ? 25
+              : 45
+          }
+        />
+
+        <YAxis
+          allowDecimals={false}
+          tick={{
+            fill: "#64748b",
+            fontSize: 8,
+          }}
+          axisLine={false}
+          tickLine={false}
+        />
+
+        <Tooltip
+          content={
+            <OnsenTrendTooltip />
+          }
+        />
+
+        <Line
+          type="monotone"
+          dataKey="guests"
+          stroke="#22c7ff"
+          strokeWidth={2.5}
+          dot={
+            onsenTrendPeriod === "WEEK"
+              ? {
+                  r: 3,
+                  fill: "#071827",
+                  stroke: "#22c7ff",
+                  strokeWidth: 2,
+                }
+              : false
+          }
+          activeDot={{
+            r: 4,
+            fill: "#22c7ff",
+          }}
+        />
+
+      </LineChart>
+    </ResponsiveContainer>
+
+  )}
+
+</div>
 
 
   {onsenLoading && (
@@ -868,6 +1069,53 @@ function CeoOnsenPackageList({
           </div>
         );
       })}
+
+    </div>
+  );
+}
+
+function formatOnsenTrendDate(
+  value: string
+) {
+
+  const parts =
+    value.split("-");
+
+  if (parts.length !== 3) {
+    return value;
+  }
+
+  return `${parts[2]}/${parts[1]}`;
+}
+
+function OnsenTrendTooltip({
+  active,
+  payload,
+}: any) {
+
+  if (
+    !active ||
+    !payload ||
+    payload.length === 0
+  ) {
+    return null;
+  }
+
+  const item =
+    payload[0].payload as OnsenTrendItem;
+
+  return (
+    <div className="ceo-onsen-tooltip">
+
+      <div>
+        {formatBusinessDate(
+          item.date
+        )}
+      </div>
+
+      <strong>
+        {item.guests} lượt khách
+      </strong>
 
     </div>
   );
