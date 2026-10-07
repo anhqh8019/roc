@@ -21,8 +21,6 @@ public class OperationAlertService {
 
     private final AlertRuleService alertRuleService;
     private final AlertMetricService alertMetricService;
-
-    // MỚI
     private final AlertStateRepository alertStateRepository;
 
 
@@ -34,6 +32,9 @@ public class OperationAlertService {
                 alertRuleService.findEnabled();
 
         List<OperationAlertResponse> alerts =
+                new ArrayList<>();
+
+        List<String> activeAlertKeys =
                 new ArrayList<>();
 
         for (AlertRuleResponse rule : rules) {
@@ -75,7 +76,9 @@ public class OperationAlertService {
                             live
                     );
 
-            // 6. Lưu/update AlertState
+            activeAlertKeys.add(alertKey);
+
+            // 6. Lưu/update AlertState và đánh dấu active
             long stateId =
                     alertStateRepository.upsert(
                             alertKey,
@@ -109,6 +112,13 @@ public class OperationAlertService {
                     )
             );
         }
+
+        // Những alert của business date hiện tại hoặc LIVE
+        // không còn nằm trong tập triggered sẽ được resolve.
+        alertStateRepository.resolveInactive(
+                businessDate,
+                activeAlertKeys
+        );
 
         return new OperationAlertsResponse(
                 businessDate,
