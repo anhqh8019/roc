@@ -1,18 +1,26 @@
 import { useEffect, useState } from "react";
-import { getAlertHistory } from "../api/alertApi";
+import {
+  deleteAlertHistory,
+  getAlertHistory,
+} from "../api/alertApi";
 import type { AlertHistoryItem } from "../types/alert";
 
 import AppLayout from "../layout/AppLayout";
 import AlertNavigation from "../components/alert/AlertNavigation";
 
 import "./AlertHistoryPage.css";
+import { useAlert } from "../context/AlertContext";
 
 const DEFAULT_PAGE_SIZE = 20;
 
 export default function AlertHistoryPage() {
+    const { refreshUnreadCount } = useAlert();
   const [alerts, setAlerts] = useState<AlertHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
+const [deleteMessage, setDeleteMessage] =
+  useState<string | null>(null);
 
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
@@ -94,6 +102,65 @@ export default function AlertHistoryPage() {
 
     void loadHistoryWithEmptyFilter();
   }
+
+  async function handleDeleteHistory() {
+  if (!from && !to) {
+    setError(
+      "Vui lòng chọn Từ ngày hoặc Đến ngày trước khi xóa lịch sử."
+    );
+    return;
+  }
+
+  if (from && to && from > to) {
+    setError(
+      "Từ ngày không được lớn hơn Đến ngày."
+    );
+    return;
+  }
+
+  const rangeText =
+    from && to
+      ? `từ ${from} đến ${to}`
+      : from
+        ? `từ ${from} trở đi`
+        : `đến hết ${to}`;
+
+  const confirmed = window.confirm(
+    `Bạn có chắc muốn xóa lịch sử cảnh báo ${rangeText}?\n\n` +
+      "Thao tác này không thể hoàn tác."
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+    setDeleting(true);
+    setError(null);
+    setDeleteMessage(null);
+
+    const deleted = await deleteAlertHistory(
+      from || undefined,
+      to || undefined
+    );
+
+    setDeleteMessage(
+      `Đã xóa ${deleted} cảnh báo.`
+    );
+
+    await loadHistory(0);
+    await refreshUnreadCount();
+
+  } catch (err) {
+    console.error(err);
+
+    setError(
+      "Không thể xóa lịch sử cảnh báo."
+    );
+  } finally {
+    setDeleting(false);
+  }
+}
 
   function handlePreviousPage() {
     if (page <= 0) return;
@@ -229,9 +296,27 @@ export default function AlertHistoryPage() {
                 >
                   Xóa lọc
                 </button>
+                <button
+  type="button"
+  className="history-filter-button danger"
+  onClick={handleDeleteHistory}
+  disabled={
+    loading ||
+    deleting ||
+    (!from && !to)
+  }
+>
+  {deleting
+    ? "Đang xóa..."
+    : "Xóa lịch sử"}
+</button>
               </div>
             </div>
-
+            {deleteMessage && (
+              <div className="alerts-state success">
+                {deleteMessage}
+              </div>
+            )}
             {error && (
               <div className="alerts-state error">{error}</div>
             )}

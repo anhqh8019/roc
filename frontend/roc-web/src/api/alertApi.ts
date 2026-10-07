@@ -85,10 +85,17 @@ export interface AlertUnreadCountResponse {
   count: number;
 }
 
-export async function getAlertUnreadCount(): Promise<number> {
+export async function getAlertUnreadCount(
+  businessDate: string
+): Promise<number> {
   const response =
     await api.get<AlertUnreadCountResponse>(
-      "/alerts/unread-count"
+      "/alerts/unread-count",
+      {
+        params: {
+          date: businessDate,
+        },
+      }
     );
 
   return response.data.count;
@@ -136,3 +143,25 @@ export async function markAlertRead(
   );
 }
 
+export interface DeleteAlertHistoryResponse {
+  deleted: number;
+}
+
+export async function deleteAlertHistory(
+  from?: string,
+  to?: string
+): Promise<number> {
+
+  const response =
+    await api.delete<DeleteAlertHistoryResponse>(
+      "/alerts/history",
+      {
+        params: {
+          from: from || undefined,
+          to: to || undefined,
+        },
+      }
+    );
+
+  return response.data.deleted;
+}

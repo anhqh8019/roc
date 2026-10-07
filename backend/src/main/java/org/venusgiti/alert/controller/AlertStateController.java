@@ -12,6 +12,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/alerts")
@@ -21,8 +22,12 @@ public class AlertStateController {
     private final AlertStateService service;
 
     @GetMapping("/unread-count")
-    public AlertUnreadCountResponse getUnreadCount() {
-        return service.getUnreadCount();
+    public AlertUnreadCountResponse getUnreadCount(
+            @RequestParam
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate date
+    ) {
+        return service.getUnreadCount(date);
     }
 
     @PatchMapping("/{id}/read")
@@ -75,6 +80,28 @@ public class AlertStateController {
                 status,
                 page,
                 size
+        );
+    }
+
+    @DeleteMapping("/history")
+    public Map<String, Integer> deleteHistory(
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate from,
+
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate to
+    ) {
+
+        int deleted = service.deleteHistory(
+                from,
+                to
+        );
+
+        return Map.of(
+                "deleted",
+                deleted
         );
     }
 }

@@ -100,18 +100,26 @@ public class AlertStateRepository {
         return id;
     }
 
-    public int countUnread() {
+    public int countUnread(LocalDate businessDate) {
 
         String sql = """
-            SELECT COUNT(*)
-            FROM AlertState
-            WHERE Status = 'UNREAD'
-            """;
+        SELECT COUNT(*)
+        FROM AlertState
+        WHERE Status = 'UNREAD'
+          AND (
+                BusinessDate = :businessDate
+                OR BusinessDate IS NULL
+              )
+        """;
 
         Integer result =
                 jdbc.queryForObject(
                         sql,
-                        Map.of(),
+                        new MapSqlParameterSource()
+                                .addValue(
+                                        "businessDate",
+                                        businessDate
+                                ),
                         Integer.class
                 );
 
@@ -240,6 +248,59 @@ public class AlertStateRepository {
         );
 
         return result != null ? result : 0L;
+    }
+
+    public int deleteHistory(
+            LocalDate from,
+            LocalDate to
+    ) {
+
+        StringBuilder sql = new StringBuilder("""
+        DELETE FROM AlertState
+        WHERE 1 = 1
+        """);
+
+        MapSqlParameterSource params =
+                new MapSqlParameterSource();
+
+        if (from != null) {
+            sql.append("""
+             AND (
+                    BusinessDate >= :fromDate
+                    OR (
+                        BusinessDate IS NULL
+                        AND CAST(FirstSeenAt AS date) >= :fromDate
+                    )
+                 )
+            """);
+
+            params.addValue(
+                    "fromDate",
+                    from
+            );
+        }
+
+        if (to != null) {
+            sql.append("""
+             AND (
+                    BusinessDate <= :toDate
+                    OR (
+                        BusinessDate IS NULL
+                        AND CAST(FirstSeenAt AS date) <= :toDate
+                    )
+                 )
+            """);
+
+            params.addValue(
+                    "toDate",
+                    to
+            );
+        }
+
+        return jdbc.update(
+                sql.toString(),
+                params
+        );
     }
 
     private void appendHistoryFilters(

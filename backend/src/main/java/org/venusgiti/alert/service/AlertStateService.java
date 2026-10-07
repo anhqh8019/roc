@@ -14,9 +14,11 @@ public class AlertStateService {
 
     private final AlertStateRepository repository;
 
-    public AlertUnreadCountResponse getUnreadCount() {
+    public AlertUnreadCountResponse getUnreadCount(
+            LocalDate businessDate
+    ) {
         return new AlertUnreadCountResponse(
-                repository.countUnread()
+                repository.countUnread(businessDate)
         );
     }
 
@@ -80,6 +82,32 @@ public class AlertStateService {
                 totalElements,
                 totalPages,
                 alerts
+        );
+    }
+
+    public int deleteHistory(
+            LocalDate from,
+            LocalDate to
+    ) {
+
+        if (from == null && to == null) {
+            throw new IllegalArgumentException(
+                    "Phải cung cấp from hoặc to khi xóa lịch sử cảnh báo"
+            );
+        }
+
+        if (from != null
+                && to != null
+                && from.isAfter(to)) {
+
+            throw new IllegalArgumentException(
+                    "from không được lớn hơn to"
+            );
+        }
+
+        return repository.deleteHistory(
+                from,
+                to
         );
     }
 }

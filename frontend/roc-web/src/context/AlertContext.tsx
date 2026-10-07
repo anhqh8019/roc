@@ -12,6 +12,7 @@ import {
   markAlertRead as markAlertReadApi,
 } from "../api/alertApi";
 
+import { useBusinessDate } from "./BusinessDateContext";
 
 interface AlertContextValue {
   unreadCount: number;
@@ -40,6 +41,8 @@ export function AlertProvider({
   children,
 }: AlertProviderProps) {
 
+    const { businessDate } = useBusinessDate();
+
   const [unreadCount, setUnreadCount] =
     useState(0);
 
@@ -63,7 +66,9 @@ export function AlertProvider({
       setLoading(true);
 
       const count =
-        await getAlertUnreadCount();
+        await getAlertUnreadCount(
+          businessDate
+        );
 
       setUnreadCount(count);
 
@@ -80,7 +85,7 @@ export function AlertProvider({
 
     }
 
-  }, []);
+  }, [businessDate]);
 
 
   const markAlertRead =
