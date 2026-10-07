@@ -39,7 +39,9 @@ public class AlertStateRepository {
         )
         BEGIN
             UPDATE AlertState
-            SET LastSeenAt = SYSDATETIME()
+            SET
+                LastSeenAt = SYSDATETIME(),
+                IsActive = 1
             WHERE AlertKey = :alertKey
         END
         ELSE
@@ -50,7 +52,8 @@ public class AlertStateRepository {
                 RuleId,
                 RuleCode,
                 BusinessDate,
-                Status
+                Status,
+                IsActive
             )
             VALUES
             (
@@ -58,7 +61,8 @@ public class AlertStateRepository {
                 :ruleId,
                 :ruleCode,
                 :businessDate,
-                'UNREAD'
+                'UNREAD',
+                1
             )
         END
         """;
@@ -100,12 +104,54 @@ public class AlertStateRepository {
         return id;
     }
 
+    public int resolveInactive(
+            LocalDate businessDate,
+            List<String> activeAlertKeys
+    ) {
+
+        StringBuilder sql = new StringBuilder("""
+        UPDATE AlertState
+        SET IsActive = 0
+        WHERE IsActive = 1
+          AND (
+                BusinessDate = :businessDate
+                OR BusinessDate IS NULL
+              )
+        """);
+
+        MapSqlParameterSource params =
+                new MapSqlParameterSource()
+                        .addValue(
+                                "businessDate",
+                                businessDate
+                        );
+
+        if (activeAlertKeys != null
+                && !activeAlertKeys.isEmpty()) {
+
+            sql.append("""
+             AND AlertKey NOT IN (:activeAlertKeys)
+            """);
+
+            params.addValue(
+                    "activeAlertKeys",
+                    activeAlertKeys
+            );
+        }
+
+        return jdbc.update(
+                sql.toString(),
+                params
+        );
+    }
+
     public int countUnread(LocalDate businessDate) {
 
         String sql = """
         SELECT COUNT(*)
         FROM AlertState
         WHERE Status = 'UNREAD'
+          AND IsActive = 1
           AND (
                 BusinessDate = :businessDate
                 OR BusinessDate IS NULL
