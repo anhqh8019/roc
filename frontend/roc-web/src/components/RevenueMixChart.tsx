@@ -33,16 +33,41 @@ export default function RevenueMixChart({ data }: Props) {
 
   useEffect(() => {
     const target = document.querySelector<HTMLElement>(".placeholder-panel");
-
     if (!target) return;
+
+    const title = target.parentElement?.querySelector<HTMLElement>(".panel-title") ?? null;
+    const previousTitle = title?.textContent ?? "Vận hành";
 
     target.textContent = "";
     target.classList.add("business-insights-host");
+    target.style.display = "block";
+    target.style.width = "100%";
+    target.style.maxWidth = "none";
+    target.style.height = "auto";
+    target.style.minHeight = "0";
+    target.style.padding = "0";
+    target.style.margin = "0";
+    target.style.textAlign = "left";
+    target.style.alignItems = "initial";
+    target.style.justifyContent = "initial";
+
+    if (title) {
+      title.textContent = "Phân tích kinh doanh";
+      title.style.textAlign = "left";
+      title.style.marginBottom = "10px";
+    }
+
     setInsightsTarget(target);
 
     return () => {
       target.classList.remove("business-insights-host");
+      target.removeAttribute("style");
       target.textContent = "Operation Overview - Coming soon";
+      if (title) {
+        title.textContent = previousTitle;
+        title.style.removeProperty("text-align");
+        title.style.removeProperty("margin-bottom");
+      }
       setInsightsTarget(null);
     };
   }, []);
