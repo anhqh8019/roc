@@ -1,6 +1,14 @@
 export interface LoginRequest {
   username: string;
   password: string;
+  captchaId: string;
+  captchaAnswer: string;
+}
+
+export interface CaptchaResponse {
+  captchaId: string;
+  question: string;
+  expiresInSeconds: number;
 }
 
 export interface AuthUser {
