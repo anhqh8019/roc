@@ -352,7 +352,13 @@ const totalOnsenPackageVisits =
               }
               subtitle={`${data.guestFlow.adults} người lớn`}
             />
-
+          <KpiCard
+            title="Doanh thu phòng"
+            value={`${formatMoney(
+              data.revenue.roomNetRevenue
+            )} đ`}
+            subtitle="Room net revenue"
+          />
             <KpiCard
               title="Doanh thu nhà hàng"
               value={`${formatMoney(
@@ -382,13 +388,8 @@ const totalOnsenPackageVisits =
               )} đ`}
             />
 
-            <KpiCard
-              title="Phòng trống"
-              value={
-                data.inventory.availableRooms
-              }
-              subtitle={`Tổng ${data.inventory.totalRooms} phòng`}
-            />
+ 
+
           </div>
 
           {/* =================================================
