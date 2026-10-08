@@ -16,74 +16,53 @@ interface AuthContextValue {
 
   login: (
     username: string,
-    password: string
+    password: string,
+    captchaId: string,
+    captchaAnswer: string
   ) => Promise<void>;
 
   logout: () => void;
 }
 
-const AuthContext =
-  createContext<AuthContextValue | null>(null);
+const AuthContext = createContext<AuthContextValue | null>(null);
 
-export function AuthProvider({
-  children,
-}: {
-  children: ReactNode;
-}) {
-  const [token, setToken] =
-    useState<string | null>(
-      localStorage.getItem("roc_access_token")
-    );
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [token, setToken] = useState<string | null>(
+    localStorage.getItem("roc_access_token")
+  );
 
-  const [user, setUser] =
-    useState<AuthUser | null>(() => {
-      const value =
-        localStorage.getItem("roc_user");
-
-      if (!value) {
-        return null;
-      }
-
-      try {
-        return JSON.parse(value);
-      } catch {
-        return null;
-      }
-    });
+  const [user, setUser] = useState<AuthUser | null>(() => {
+    const value = localStorage.getItem("roc_user");
+    if (!value) return null;
+    try {
+      return JSON.parse(value);
+    } catch {
+      return null;
+    }
+  });
 
   async function login(
     username: string,
-    password: string
+    password: string,
+    captchaId: string,
+    captchaAnswer: string
   ) {
-    const response =
-      await loginApi({
-        username,
-        password,
-      });
+    const response = await loginApi({
+      username,
+      password,
+      captchaId,
+      captchaAnswer,
+    });
 
-    localStorage.setItem(
-      "roc_access_token",
-      response.token
-    );
-
-    localStorage.setItem(
-      "roc_user",
-      JSON.stringify(response.user)
-    );
-
+    localStorage.setItem("roc_access_token", response.token);
+    localStorage.setItem("roc_user", JSON.stringify(response.user));
     setToken(response.token);
     setUser(response.user);
   }
 
   function logout() {
-    localStorage.removeItem(
-      "roc_access_token"
-    );
-
-    localStorage.removeItem(
-      "roc_user"
-    );
-
+    localStorage.removeItem("roc_access_token");
+    localStorage.removeItem("roc_user");
     setToken(null);
     setUser(null);
   }
@@ -93,9 +72,7 @@ export function AuthProvider({
       value={{
         user,
         token,
-        isAuthenticated: Boolean(
-          token && user
-        ),
+        isAuthenticated: Boolean(token && user),
         login,
         logout,
       }}
@@ -106,14 +83,9 @@ export function AuthProvider({
 }
 
 export function useAuth() {
-  const context =
-    useContext(AuthContext);
-
+  const context = useContext(AuthContext);
   if (!context) {
-    throw new Error(
-      "useAuth must be used inside AuthProvider"
-    );
+    throw new Error("useAuth must be used inside AuthProvider");
   }
-
   return context;
 }
