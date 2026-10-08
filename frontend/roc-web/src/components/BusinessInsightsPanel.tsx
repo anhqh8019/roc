@@ -102,11 +102,13 @@ export default function BusinessInsightsPanel({ businessDate }: Props) {
   );
 
   const topNationality = useMemo(
-    () => [...(demographics?.nationalities ?? [])]
+    () => [...(demographics?.nationalities ?? demographics?.nationalityGroups ?? [])]
       .filter((item) => item.nationality !== "UNKNOWN")
       .sort((a, b) => b.count - a.count)[0],
     [demographics]
   );
+
+  const ageCoverage = demographics?.ageCoveragePercent ?? demographics?.coveragePercent;
 
   if (loading) {
     return <div style={{ minHeight: 290, display: "grid", placeItems: "center", color: "#64748b", fontSize: 11 }}>Đang tải phân tích kinh doanh...</div>;
@@ -191,11 +193,13 @@ export default function BusinessInsightsPanel({ businessDate }: Props) {
         <div style={{ borderTop: "1px solid rgba(148,163,184,.12)", paddingTop: 9 }}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 7 }}>
             <span style={{ fontSize: 10, fontWeight: 600, color: "#cbd5e1" }}>Chân dung khách hàng</span>
-            <span style={{ fontSize: 8, color: "#64748b" }}>{demographics.totalGuests} khách · phủ tuổi {demographics.ageCoveragePercent.toFixed(1)}%</span>
+            <span style={{ fontSize: 8, color: "#64748b" }}>
+              {demographics.totalGuests} khách{ageCoverage != null ? ` · phủ tuổi ${ageCoverage.toFixed(1)}%` : ""}
+            </span>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 7 }}>
             <Metric label="Nhóm tuổi nổi bật" value={topAge?.group ?? "—"} detail={topAge ? `${topAge.percent.toFixed(1)}% tổng khách` : "Chưa đủ dữ liệu"} />
-            <Metric label="Quốc tịch nổi bật" value={topNationality?.nationality ?? "—"} detail={topNationality ? `${topNationality.percent.toFixed(1)}% tổng khách` : "Chưa đủ dữ liệu"} />
+            <Metric label="Quốc tịch nổi bật" value={topNationality?.nationality ?? topNationality?.group ?? "—"} detail={topNationality ? `${topNationality.percent.toFixed(1)}% tổng khách` : "Chưa đủ dữ liệu"} />
           </div>
         </div>
       )}
