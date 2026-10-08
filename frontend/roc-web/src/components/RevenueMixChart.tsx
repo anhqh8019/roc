@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   Cell,
   Pie,
@@ -6,6 +8,7 @@ import {
   Tooltip,
 } from "recharts";
 
+import BusinessInsightsPanel from "./BusinessInsightsPanel";
 import type { HotelDashboardResponse } from "../types/hotel";
 
 interface Props {
@@ -26,6 +29,24 @@ function formatMoney(value: number) {
 }
 
 export default function RevenueMixChart({ data }: Props) {
+  const [insightsTarget, setInsightsTarget] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    const target = document.querySelector<HTMLElement>(".placeholder-panel");
+
+    if (!target) return;
+
+    target.textContent = "";
+    target.classList.add("business-insights-host");
+    setInsightsTarget(target);
+
+    return () => {
+      target.classList.remove("business-insights-host");
+      target.textContent = "Operation Overview - Coming soon";
+      setInsightsTarget(null);
+    };
+  }, []);
+
   const chartData = [
     { name: "Room", value: data.revenue.roomNetRevenue },
     { name: "F&B", value: data.revenue.foodBeverageRevenue },
@@ -36,64 +57,71 @@ export default function RevenueMixChart({ data }: Props) {
   const total = chartData.reduce((sum, item) => sum + item.value, 0);
 
   return (
-    <div className="revenue-mix">
-      <div className="revenue-donut-wrapper">
-        <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-            <Pie
-              data={chartData}
-              dataKey="value"
-              nameKey="name"
-              innerRadius={48}
-              outerRadius={72}
-              paddingAngle={2}
-              stroke="none"
-            >
-              {chartData.map((_, index) => (
-                <Cell key={index} fill={COLORS[index]} />
-              ))}
-            </Pie>
-            <Tooltip
-              formatter={(value) => `${formatMoney(Number(value))} đ`}
-              contentStyle={{
-                background: "#0b1d2b",
-                border: "1px solid #21445d",
-                borderRadius: 7,
-                color: "#fff",
-              }}
-            />
-          </PieChart>
-        </ResponsiveContainer>
+    <>
+      <div className="revenue-mix">
+        <div className="revenue-donut-wrapper">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={chartData}
+                dataKey="value"
+                nameKey="name"
+                innerRadius={48}
+                outerRadius={72}
+                paddingAngle={2}
+                stroke="none"
+              >
+                {chartData.map((_, index) => (
+                  <Cell key={index} fill={COLORS[index]} />
+                ))}
+              </Pie>
+              <Tooltip
+                formatter={(value) => `${formatMoney(Number(value))} đ`}
+                contentStyle={{
+                  background: "#0b1d2b",
+                  border: "1px solid #21445d",
+                  borderRadius: 7,
+                  color: "#fff",
+                }}
+              />
+            </PieChart>
+          </ResponsiveContainer>
 
-        <div className="revenue-donut-center">
-          <span>Tổng</span>
-          <strong>{formatMoney(total)}</strong>
-          <small>đ</small>
+          <div className="revenue-donut-center">
+            <span>Tổng</span>
+            <strong>{formatMoney(total)}</strong>
+            <small>đ</small>
+          </div>
+        </div>
+
+        <div className="revenue-legend">
+          {chartData.map((item, index) => {
+            const percent = total > 0 ? (item.value * 100) / total : 0;
+
+            return (
+              <div key={item.name} className="revenue-legend-row">
+                <div className="revenue-legend-name">
+                  <span
+                    className="revenue-dot"
+                    style={{ background: COLORS[index] }}
+                  />
+                  <span>{item.name}</span>
+                </div>
+
+                <div className="revenue-legend-value">
+                  <strong>{percent.toFixed(1)}%</strong>
+                  <span>{formatMoney(item.value)}</span>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
-      <div className="revenue-legend">
-        {chartData.map((item, index) => {
-          const percent = total > 0 ? (item.value * 100) / total : 0;
-
-          return (
-            <div key={item.name} className="revenue-legend-row">
-              <div className="revenue-legend-name">
-                <span
-                  className="revenue-dot"
-                  style={{ background: COLORS[index] }}
-                />
-                <span>{item.name}</span>
-              </div>
-
-              <div className="revenue-legend-value">
-                <strong>{percent.toFixed(1)}%</strong>
-                <span>{formatMoney(item.value)}</span>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
+      {insightsTarget && createPortal(
+        <BusinessInsightsPanel businessDate={data.businessDate} />,
+        insightsTarget
+      )}
+    </>
   );
 }
