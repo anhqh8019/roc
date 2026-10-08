@@ -5,6 +5,7 @@ import type { CustomerTrendResponse, RevenueUnitTrendResponse } from "../types/b
 
 interface Props { businessDate: string; }
 type Period = "WEEK" | "MONTH" | "THREE_MONTHS";
+type RevenueTotals = { hotel:number; foodBeverage:number; onsen:number; spa:number; other:number; total:number; };
 const DAYS: Record<Period, number> = { WEEK: 7, MONTH: 30, THREE_MONTHS: 90 };
 const UNIT_COLORS = ["#22c7ff", "#19bf73", "#f59e0b", "#8b5cf6", "#94a3b8"];
 function shortDate(value: string) { const p=value.split("-"); return p.length===3?`${p[2]}/${p[1]}`:value; }
@@ -19,7 +20,7 @@ export default function BusinessInsightsPanel({businessDate}:Props){
  const customerData=useMemo(()=>aggregate(customers?.data??[],period,["adults","children","unknownAge"]),[customers,period]);
  const revenueData=useMemo(()=>aggregate(revenue?.data??[],period,["hotel","foodBeverage","onsen","spa","other"]).map(row=>({...row,total:Number(row.hotel??0)+Number(row.foodBeverage??0)+Number(row.onsen??0)+Number(row.spa??0)+Number(row.other??0)})),[revenue,period]);
  const customerTotals=useMemo(()=>customerData.reduce((a,x)=>({adults:a.adults+Number(x.adults??0),children:a.children+Number(x.children??0),unknown:a.unknown+Number(x.unknownAge??0)}),{adults:0,children:0,unknown:0}),[customerData]);
- const revenueTotals=useMemo(()=>revenueData.reduce((a,x)=>({hotel:a.hotel+Number(x.hotel??0),foodBeverage:a.foodBeverage+Number(x.foodBeverage??0),onsen:a.onsen+Number(x.onsen??0),spa:a.spa+Number(x.spa??0),other:a.other+Number(x.other??0),total:a.total+Number(x.total??0)}),{hotel:0,foodBeverage:0,onsen:0,spa:0,other:0,total:0}),[revenueData]);
+ const revenueTotals=useMemo(()=>revenueData.reduce<RevenueTotals>((a,x)=>({hotel:a.hotel+Number(x.hotel??0),foodBeverage:a.foodBeverage+Number(x.foodBeverage??0),onsen:a.onsen+Number(x.onsen??0),spa:a.spa+Number(x.spa??0),other:a.other+Number(x.other??0),total:a.total+Number(x.total??0)}),{hotel:0,foodBeverage:0,onsen:0,spa:0,other:0,total:0}),[revenueData]);
  const revenueMix=[{name:"Hotel",value:revenueTotals.hotel},{name:"F&B",value:revenueTotals.foodBeverage},{name:"Onsen",value:revenueTotals.onsen},{name:"Spa",value:revenueTotals.spa},{name:"Other",value:revenueTotals.other}];
  const latestCustomer=customerData.at(-1);const latestCustomerValue=Number(latestCustomer?.adults??0)+Number(latestCustomer?.children??0);
  const latestRevenue=revenueData.at(-1);const latestRevenueValue=Number(latestRevenue?.total??0);
