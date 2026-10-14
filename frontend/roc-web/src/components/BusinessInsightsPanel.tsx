@@ -4,10 +4,10 @@ import { getCustomerTrend, getRevenueUnitTrend } from "../api/businessInsightsAp
 import type { CustomerTrendResponse, RevenueUnitTrendResponse } from "../types/businessInsights";
 
 interface Props { businessDate: string; }
-type Period = "WEEK" | "MONTH" | "THREE_MONTHS";
+type Period = "WEEK" | "MONTH" | "THREE_MONTHS" | "SIX_MONTHS" | "YEAR";
 type RevenueTotals = { hotel:number; foodBeverage:number; onsen:number; spa:number; other:number; total:number; };
 type RevenueLineKey = "hotel" | "foodBeverage" | "onsen" | "spa" | "other";
-const DAYS: Record<Period, number> = { WEEK: 7, MONTH: 30, THREE_MONTHS: 90 };
+const DAYS: Record<Period, number> = { WEEK: 7, MONTH: 30, THREE_MONTHS: 90, SIX_MONTHS: 180, YEAR: 365 };
 const UNIT_COLORS = ["#22c7ff", "#19bf73", "#f59e0b", "#8b5cf6", "#94a3b8"];
 const REVENUE_LINES: { key: RevenueLineKey; name: string; color: string }[] = [
  { key:"hotel", name:"Hotel", color:UNIT_COLORS[0] },
@@ -37,7 +37,7 @@ export default function BusinessInsightsPanel({businessDate}:Props){
  if(loading)return <div style={{minHeight:360,display:"grid",placeItems:"center",color:"#7f96a8",fontSize:13}}>Đang tải phân tích kinh doanh...</div>;
  if(error)return <div style={{minHeight:360,display:"grid",placeItems:"center",color:"#f87171",fontSize:13}}>Không tải được dữ liệu phân tích kinh doanh.</div>;
  return <div style={{display:"grid",gap:14,width:"100%",fontSize:11}}>
-  <div style={{display:"flex",justifyContent:"flex-end"}}><select value={period} onChange={e=>setPeriod(e.target.value as Period)} style={{background:"#071827",color:"#d8e3ea",border:"1px solid #18506c",borderRadius:6,padding:"6px 26px 6px 10px",fontSize:11}}><option value="WEEK">1 tuần</option><option value="MONTH">1 tháng</option><option value="THREE_MONTHS">3 tháng</option></select></div>
+  <div style={{display:"flex",justifyContent:"flex-end"}}><select value={period} onChange={e=>setPeriod(e.target.value as Period)} style={{background:"#071827",color:"#d8e3ea",border:"1px solid #18506c",borderRadius:6,padding:"6px 26px 6px 10px",fontSize:11}}><option value="WEEK">1 tuần</option><option value="MONTH">1 tháng</option><option value="THREE_MONTHS">3 tháng</option><option value="SIX_MONTHS">6 tháng</option><option value="YEAR">1 năm</option></select></div>
   {customers&&<section style={{borderBottom:"1px solid rgba(148,163,184,.12)",paddingBottom:14}}>
    <div style={{marginBottom:8}}><div style={{fontSize:13,fontWeight:700,color:"#e8f0f5"}}>Xu hướng khách hàng</div><div style={{fontSize:9,color:"#7890a2",marginTop:3}}>{period==="WEEK"?"Tổng lượt khách theo ngày":"Tổng lượt khách theo tuần"}</div></div>
    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:7,marginBottom:8}}><Kpi label="TỔNG LƯỢT KHÁCH-LƯU-TRÚ" value={money(customerTotal)} note={`Toàn bộ ${period==="WEEK"?"7 ngày":"kỳ đã chọn"}`}/><Kpi label={period==="WEEK"?"NGÀY GẦN NHẤT":"TUẦN HIỆN TẠI"} value={money(latestCustomerValue)} note={latestLabel}/></div>
