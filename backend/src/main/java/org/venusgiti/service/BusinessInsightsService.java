@@ -106,6 +106,6 @@ public class BusinessInsightsService {
     }
 
     private void validateDays(int days){
-        if(days<1||days>90) throw new IllegalArgumentException("days must be between 1 and 90");
+        if(days<1||days>365) throw new IllegalArgumentException("days must be between 1 and 365");
     }
 }
