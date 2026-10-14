@@ -194,7 +194,7 @@ public class SmileBusinessInsightsRepository {
                    SUM(CASE WHEN a.Age IS NULL THEN 1 ELSE 0 END) AS UnknownAge
             FROM Dates d LEFT JOIN Ages a ON a.BusinessDate=d.BusinessDate
             GROUP BY d.BusinessDate ORDER BY d.BusinessDate
-            OPTION (MAXRECURSION 100)
+            OPTION (MAXRECURSION 0)
             """;
         return jdbc.query(sql, Map.of("fromDate",fromDate,"toDate",toDate),
                 (rs,n)->new CustomerTrendRow(rs.getDate("BusinessDate").toLocalDate(),rs.getInt("Adults"),rs.getInt("Children"),rs.getInt("UnknownAge")));
