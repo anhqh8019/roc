@@ -1,11 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
-import { AlertTriangle, RefreshCw } from "lucide-react";
+import { AlertTriangle, Download, RefreshCw } from "lucide-react";
 import AppLayout from "../layout/AppLayout";
 import { getMonthlyOperationsReport, type MonthlyReportRow } from "../api/reportApi";
 import "./ReportsPage.css";
 
 const money = new Intl.NumberFormat("vi-VN", { maximumFractionDigits: 0 });
 const currentYear = new Date().getFullYear();
+
+function excelCell(value: string | number) {
+  const text = String(value).replace(/"/g, '""');
+  return `"${text}"`;
+}
 
 export default function ReportsPage() {
   const [year, setYear] = useState(currentYear);
@@ -40,6 +45,40 @@ export default function ReportsPage() {
     unallocated: a.unallocated + r.unallocatedRoomRevenue,
   }), { villaRevenue: 0, hotelRevenue: 0, onsenRevenue: 0, restaurantRevenue: 0, villaRoomsSold: 0, hotelRoomsSold: 0, unallocated: 0 }), [rows]);
 
+  const downloadExcel = () => {
+    if (loading || rows.length === 0) return;
+
+    const lines = [
+      ["BÁO CÁO DOANH THU & PHÒNG BÁN THEO THÁNG"],
+      [`Năm ${year} - đến tháng ${toMonth}`],
+      [],
+      ["Tháng", "Doanh thu Biệt thự", "Doanh thu Khách sạn", "Doanh thu Onsen", "Doanh thu Nhà hàng", "Số phòng bán Biệt thự", "Số phòng bán Khách sạn", "Doanh thu phòng chưa phân bổ"],
+      ...rows.map(r => [
+        `Tháng ${r.month}`,
+        r.villaRevenue,
+        r.hotelRevenue,
+        r.onsenRevenue,
+        r.restaurantRevenue,
+        r.villaRoomsSold,
+        r.hotelRoomsSold,
+        r.unallocatedRoomRevenue,
+      ]),
+      ["Tổng", totals.villaRevenue, totals.hotelRevenue, totals.onsenRevenue, totals.restaurantRevenue, totals.villaRoomsSold, totals.hotelRoomsSold, totals.unallocated],
+    ];
+
+    // UTF-8 BOM helps Excel open Vietnamese text correctly. Excel opens this CSV directly.
+    const csv = "\uFEFF" + lines.map(line => line.map(excelCell).join(";")).join("\r\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `bao-cao-doanh-thu-phong-ban-${year}-T01-T${String(toMonth).padStart(2, "0")}.csv`;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <AppLayout>
       <section className="reports-page">
@@ -53,6 +92,7 @@ export default function ReportsPage() {
             <label>Năm<select value={year} onChange={e => setYear(Number(e.target.value))}>{[currentYear - 2, currentYear - 1, currentYear, currentYear + 1].map(y => <option key={y}>{y}</option>)}</select></label>
             <label>Đến tháng<select value={toMonth} onChange={e => setToMonth(Number(e.target.value))}>{Array.from({ length: 12 }, (_, i) => i + 1).map(m => <option key={m} value={m}>Tháng {m}</option>)}</select></label>
             <button type="button" onClick={() => void load()} disabled={loading}><RefreshCw size={15} /> Làm mới</button>
+            <button type="button" onClick={downloadExcel} disabled={loading || rows.length === 0}><Download size={15} /> Tải Excel</button>
           </div>
         </div>
 
