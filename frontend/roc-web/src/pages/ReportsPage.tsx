@@ -48,7 +48,7 @@ export default function ReportsPage() {
   const downloadExcel = () => {
     if (loading || rows.length === 0) return;
 
-    const lines = [
+    const lines: Array<Array<string | number>> = [
       ["BÁO CÁO DOANH THU & PHÒNG BÁN THEO THÁNG"],
       [`Năm ${year} - đến tháng ${toMonth}`],
       [],
@@ -66,13 +66,24 @@ export default function ReportsPage() {
       ["Tổng", totals.villaRevenue, totals.hotelRevenue, totals.onsenRevenue, totals.restaurantRevenue, totals.villaRoomsSold, totals.hotelRoomsSold, totals.unallocated],
     ];
 
-    // UTF-8 BOM helps Excel open Vietnamese text correctly. Excel opens this CSV directly.
-    const csv = "\uFEFF" + lines.map(line => line.map(excelCell).join(";")).join("\r\n");
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    // Excel on Windows/Vietnam may ignore semicolon CSV delimiters depending on the
+    // machine's regional List separator. A UTF-16LE tab-separated file is parsed
+    // by Excel into columns reliably while still opening directly as an .xls file.
+    const tsv = lines.map(line => line.map(excelCell).join("\t")).join("\r\n");
+    const utf16 = new Uint8Array(2 + tsv.length * 2);
+    utf16[0] = 0xff;
+    utf16[1] = 0xfe;
+    for (let i = 0; i < tsv.length; i += 1) {
+      const code = tsv.charCodeAt(i);
+      utf16[2 + i * 2] = code & 0xff;
+      utf16[3 + i * 2] = code >> 8;
+    }
+
+    const blob = new Blob([utf16], { type: "application/vnd.ms-excel;charset=utf-16le;" });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
     anchor.href = url;
-    anchor.download = `bao-cao-doanh-thu-phong-ban-${year}-T01-T${String(toMonth).padStart(2, "0")}.csv`;
+    anchor.download = `bao-cao-doanh-thu-phong-ban-${year}-T01-T${String(toMonth).padStart(2, "0")}.xls`;
     document.body.appendChild(anchor);
     anchor.click();
     anchor.remove();
