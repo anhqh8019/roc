@@ -205,38 +205,49 @@ function generateDemoTrend(from: string, to: string): HotelTrendResponse[] {
   const start = parseDate(from);
   const end = parseDate(to);
   const totalRooms = 84;
+  let previousOccupancy = seededRange(dateSeed(start) - 1, 20, 88);
 
   for (let date = new Date(start); date <= end; date.setDate(date.getDate() + 1)) {
-    const yearStart = new Date(date.getFullYear(), 0, 1);
-    const dayOfYear = Math.floor((date.getTime() - yearStart.getTime()) / 86400000);
+    const seed = dateSeed(date);
     const dayOfWeek = date.getDay();
 
-    // Slow seasonal movement keeps the demo readable over long date ranges.
-    const seasonalWave = 7 * Math.sin(dayOfYear / 21) + 4 * Math.sin(dayOfYear / 47);
-    const summerLift = date.getMonth() >= 4 && date.getMonth() <= 7 ? 6 : 0;
-    const baseOccupancy = clamp(67 + summerLift + seasonalWave, 55, 84);
+    // Saturday remains a sell-out for the presentation. Other days use deterministic
+    // pseudo-random targets from 20-96%, then blend with the previous day so the
+    // series feels irregular without producing the repeated saw-tooth pattern.
+    let occupancyPercent: number;
+    if (dayOfWeek === 6) {
+      occupancyPercent = 100;
+    } else {
+      const randomTarget = seededRange(seed, 20, 96);
+      const momentum = seededRange(seed + 17, -18, 18);
+      occupancyPercent = clamp(
+        previousOccupancy * 0.42 + randomTarget * 0.58 + momentum,
+        20,
+        96
+      );
+    }
+    previousOccupancy = occupancyPercent;
 
-    // Build a smooth weekly ramp: weekdays rise gradually into Saturday's sell-out,
-    // then Sunday settles back toward the underlying seasonal level.
-    const saturdayLift = 100 - baseOccupancy;
-    const weeklyFactor = dayOfWeek === 0 ? 0.22 : dayOfWeek / 6;
-    const occupancyPercent = dayOfWeek === 6
-      ? 100
-      : clamp(baseOccupancy + saturdayLift * weeklyFactor, 55, 99);
     const occupiedRooms = dayOfWeek === 6
       ? totalRooms
       : Math.round(totalRooms * occupancyPercent / 100);
 
-    const baseAdr = 1260000
-      + summerLift * 17000
-      + 90000 * Math.sin(dayOfYear / 35);
-    const saturdayRateLift = 260000 * weeklyFactor;
-    const adr = Math.round(baseAdr + saturdayRateLift);
+    // Rate and ancillary revenue follow demand but retain independent variation.
+    const demandLift = occupancyPercent / 100;
+    const adrNoise = seededRange(seed + 31, -110000, 140000);
+    const adr = Math.round(clamp(
+      1080000 + demandLift * 520000 + adrNoise + (dayOfWeek === 6 ? 140000 : 0),
+      980000,
+      1850000
+    ));
     const revPar = Math.round(adr * occupancyPercent / 100);
     const roomNetRevenue = Math.round(occupiedRooms * adr);
 
-    // Ancillary spend also rises toward Saturday so revenue follows occupancy naturally.
-    const ancillaryFactor = 1.42 + 0.10 * weeklyFactor + 0.04 * Math.sin(dayOfYear / 29);
+    const ancillaryFactor = clamp(
+      1.30 + demandLift * 0.30 + seededRange(seed + 53, -0.08, 0.12),
+      1.24,
+      1.78
+    );
     const totalNetRevenue = Math.round(roomNetRevenue * ancillaryFactor);
 
     result.push({
@@ -251,6 +262,16 @@ function generateDemoTrend(from: string, to: string): HotelTrendResponse[] {
   }
 
   return result;
+}
+
+function dateSeed(date: Date) {
+  return date.getFullYear() * 10000 + (date.getMonth() + 1) * 100 + date.getDate();
+}
+
+function seededRange(seed: number, min: number, max: number) {
+  const value = Math.sin(seed * 12.9898 + 78.233) * 43758.5453;
+  const normalized = value - Math.floor(value);
+  return min + normalized * (max - min);
 }
 
 function validateDateRange(from: string, to: string) {
