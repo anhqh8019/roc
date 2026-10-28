@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 
-import { getHotelTrend } from "../api/hotelApi";
 import type { HotelTrendResponse } from "../types/hotel";
 
 import OccupancyTrendChart from "./OccupancyTrendChart";
@@ -14,25 +13,19 @@ interface Props {
 type RangeDays = 7 | 14 | 30;
 
 const MAX_RANGE_DAYS = 365;
+const DEMO_FROM = "2026-01-01";
+const DEMO_TO = "2026-10-31";
 
-export default function HotelTrendSection({ selectedDate }: Props) {
-  const [range, setRange] = useState<RangeDays | null>(7);
-  const [dateFrom, setDateFrom] = useState(() => subtractDays(selectedDate, 6));
-  const [dateTo, setDateTo] = useState(selectedDate);
+export default function HotelTrendSection({ selectedDate: _selectedDate }: Props) {
+  const [range, setRange] = useState<RangeDays | null>(null);
+  const [dateFrom, setDateFrom] = useState(DEMO_FROM);
+  const [dateTo, setDateTo] = useState(DEMO_TO);
   const [data, setData] = useState<HotelTrendResponse[]>([]);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fullscreen, setFullscreen] = useState(false);
 
   useEffect(() => {
-    if (range !== null) {
-      setDateFrom(subtractDays(selectedDate, range - 1));
-      setDateTo(selectedDate);
-    }
-  }, [selectedDate, range]);
-
-  useEffect(() => {
-    void loadTrend(dateFrom, dateTo);
+    setData(generateDemoTrend(dateFrom, dateTo));
   }, [dateFrom, dateTo]);
 
   useEffect(() => {
@@ -52,40 +45,25 @@ export default function HotelTrendSection({ selectedDate }: Props) {
     };
   }, [fullscreen]);
 
-  async function loadTrend(from: string, to: string) {
-    const validationError = validateDateRange(from, to);
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
-
-    try {
-      setLoading(true);
-      setError(null);
-      const result = await getHotelTrend(from, to);
-      setData(result);
-    } catch (error) {
-      console.error("Load trend error:", error);
-      setError("Không tải được dữ liệu performance");
-    } finally {
-      setLoading(false);
-    }
-  }
-
   function selectPreset(days: RangeDays) {
     setRange(days);
-    setDateFrom(subtractDays(selectedDate, days - 1));
-    setDateTo(selectedDate);
+    setDateTo(DEMO_TO);
+    setDateFrom(subtractDays(DEMO_TO, days - 1));
+    setError(null);
   }
 
   function changeFrom(value: string) {
+    const validationError = validateDateRange(value, dateTo);
     setRange(null);
     setDateFrom(value);
+    setError(validationError);
   }
 
   function changeTo(value: string) {
+    const validationError = validateDateRange(dateFrom, value);
     setRange(null);
     setDateTo(value);
+    setError(validationError);
   }
 
   return (
@@ -102,8 +80,21 @@ export default function HotelTrendSection({ selectedDate }: Props) {
     >
       <div className="hotel-trend-header">
         <div>
-          <h2>Hotel Performance</h2>
-          <span>Historical performance trend</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <h2>Hotel Performance</h2>
+            <span style={{
+              padding: "3px 8px",
+              borderRadius: 999,
+              background: "#8a5a00",
+              color: "#ffd36a",
+              fontSize: 10,
+              fontWeight: 700,
+              letterSpacing: ".04em",
+            }}>
+              DEMO DATA
+            </span>
+          </div>
+          <span>Dữ liệu mô phỏng phục vụ trình diễn · 01/01/2026 - 31/10/2026</span>
         </div>
 
         <div
@@ -125,19 +116,10 @@ export default function HotelTrendSection({ selectedDate }: Props) {
               <input
                 type="date"
                 value={dateFrom}
-                max={dateTo || selectedDate}
+                min={DEMO_FROM}
+                max={dateTo || DEMO_TO}
                 onChange={(e) => changeFrom(e.target.value)}
-                style={{
-                  width: 122,
-                  height: 30,
-                  padding: "0 6px",
-                  border: "1px solid #214158",
-                  borderRadius: 6,
-                  background: "#102438",
-                  color: "#d9e5ee",
-                  colorScheme: "dark",
-                  fontSize: 10,
-                }}
+                style={dateInputStyle}
               />
             </label>
             <label style={{ display: "flex", flexDirection: "column", gap: 3 }}>
@@ -146,19 +128,9 @@ export default function HotelTrendSection({ selectedDate }: Props) {
                 type="date"
                 value={dateTo}
                 min={dateFrom}
-                max={addDays(dateFrom, MAX_RANGE_DAYS - 1)}
+                max={minDate(DEMO_TO, addDays(dateFrom, MAX_RANGE_DAYS - 1))}
                 onChange={(e) => changeTo(e.target.value)}
-                style={{
-                  width: 122,
-                  height: 30,
-                  padding: "0 6px",
-                  border: "1px solid #214158",
-                  borderRadius: 6,
-                  background: "#102438",
-                  color: "#d9e5ee",
-                  colorScheme: "dark",
-                  fontSize: 10,
-                }}
+                style={dateInputStyle}
               />
             </label>
           </div>
@@ -184,8 +156,6 @@ export default function HotelTrendSection({ selectedDate }: Props) {
 
       {error && <div className="trend-error">{error}</div>}
 
-      {loading && data.length === 0 && <div className="trend-loading">Loading...</div>}
-
       {data.length > 0 && (
         <>
           <div className="trend-chart-grid">
@@ -198,6 +168,18 @@ export default function HotelTrendSection({ selectedDate }: Props) {
     </section>
   );
 }
+
+const dateInputStyle = {
+  width: 122,
+  height: 30,
+  padding: "0 6px",
+  border: "1px solid #214158",
+  borderRadius: 6,
+  background: "#102438",
+  color: "#d9e5ee",
+  colorScheme: "dark",
+  fontSize: 10,
+} as const;
 
 function RangeButton({ active, onClick, children }: {
   active: boolean;
@@ -213,6 +195,51 @@ function RangeButton({ active, onClick, children }: {
       {children}
     </button>
   );
+}
+
+function generateDemoTrend(from: string, to: string): HotelTrendResponse[] {
+  const validationError = validateDateRange(from, to);
+  if (validationError) return [];
+
+  const result: HotelTrendResponse[] = [];
+  const start = parseDate(from);
+  const end = parseDate(to);
+  const totalRooms = 84;
+  let index = 0;
+
+  for (let date = new Date(start); date <= end; date.setDate(date.getDate() + 1)) {
+    const month = date.getMonth() + 1;
+    const dayOfWeek = date.getDay();
+    const weekendBoost = dayOfWeek === 5 || dayOfWeek === 6 ? 12 : dayOfWeek === 0 ? 7 : 0;
+    const seasonBoost = month >= 5 && month <= 8 ? 10 : month >= 9 ? 6 : 2;
+    const wave = 8 * Math.sin(index / 8.5) + 5 * Math.sin(index / 22);
+    const occupancyPercent = clamp(58 + seasonBoost + weekendBoost + wave, 48, 94);
+    const occupiedRooms = Math.round(totalRooms * occupancyPercent / 100);
+
+    const adr = Math.round(
+      1250000
+      + seasonBoost * 18000
+      + weekendBoost * 12000
+      + 90000 * Math.sin(index / 17)
+    );
+    const revPar = Math.round(adr * occupancyPercent / 100);
+    const roomNetRevenue = Math.round(occupiedRooms * adr);
+    const ancillaryFactor = 1.48 + 0.08 * Math.sin(index / 13);
+    const totalNetRevenue = Math.round(roomNetRevenue * ancillaryFactor);
+
+    result.push({
+      businessDate: formatDate(date),
+      occupiedRooms,
+      occupancyPercent: Number(occupancyPercent.toFixed(1)),
+      roomNetRevenue,
+      totalNetRevenue,
+      adr,
+      revPar,
+    });
+    index += 1;
+  }
+
+  return result;
 }
 
 function validateDateRange(from: string, to: string) {
@@ -250,4 +277,13 @@ function addDays(dateString: string, days: number) {
   const date = parseDate(dateString);
   date.setDate(date.getDate() + days);
   return formatDate(date);
+}
+
+function minDate(first: string, second?: string) {
+  if (!second) return first;
+  return first < second ? first : second;
+}
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
 }
