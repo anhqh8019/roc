@@ -78,25 +78,59 @@ export default function HotelTrendSection({ selectedDate }: Props) {
           <span>Historical performance trend</span>
         </div>
 
-        <div className="trend-range-controls">
-          <div className="trend-date-range">
-            <label>
-              <span>Từ ngày</span>
+        <div
+          className="trend-range-controls"
+          style={{
+            display: "flex",
+            alignItems: "flex-end",
+            justifyContent: "flex-end",
+            gap: 8,
+            flexWrap: "wrap",
+          }}
+        >
+          <div
+            className="trend-date-range"
+            style={{ display: "flex", alignItems: "flex-end", gap: 6 }}
+          >
+            <label style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+              <span style={{ margin: 0, fontSize: 8 }}>Từ ngày</span>
               <input
                 type="date"
                 value={dateFrom}
                 max={dateTo || selectedDate}
                 onChange={(e) => changeFrom(e.target.value)}
+                style={{
+                  width: 122,
+                  height: 30,
+                  padding: "0 6px",
+                  border: "1px solid #214158",
+                  borderRadius: 6,
+                  background: "#102438",
+                  color: "#d9e5ee",
+                  colorScheme: "dark",
+                  fontSize: 10,
+                }}
               />
             </label>
-            <label>
-              <span>Đến ngày</span>
+            <label style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+              <span style={{ margin: 0, fontSize: 8 }}>Đến ngày</span>
               <input
                 type="date"
                 value={dateTo}
                 min={dateFrom}
                 max={addDays(dateFrom, MAX_RANGE_DAYS - 1)}
                 onChange={(e) => changeTo(e.target.value)}
+                style={{
+                  width: 122,
+                  height: 30,
+                  padding: "0 6px",
+                  border: "1px solid #214158",
+                  borderRadius: 6,
+                  background: "#102438",
+                  color: "#d9e5ee",
+                  colorScheme: "dark",
+                  fontSize: 10,
+                }}
               />
             </label>
           </div>
