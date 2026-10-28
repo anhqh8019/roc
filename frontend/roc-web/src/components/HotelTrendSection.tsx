@@ -22,6 +22,7 @@ export default function HotelTrendSection({ selectedDate }: Props) {
   const [data, setData] = useState<HotelTrendResponse[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fullscreen, setFullscreen] = useState(false);
 
   useEffect(() => {
     if (range !== null) {
@@ -33,6 +34,23 @@ export default function HotelTrendSection({ selectedDate }: Props) {
   useEffect(() => {
     void loadTrend(dateFrom, dateTo);
   }, [dateFrom, dateTo]);
+
+  useEffect(() => {
+    if (!fullscreen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setFullscreen(false);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [fullscreen]);
 
   async function loadTrend(from: string, to: string) {
     const validationError = validateDateRange(from, to);
@@ -71,7 +89,17 @@ export default function HotelTrendSection({ selectedDate }: Props) {
   }
 
   return (
-    <section className="hotel-trend-section">
+    <section
+      className={`hotel-trend-section ${fullscreen ? "hotel-trend-fullscreen" : ""}`}
+      style={fullscreen ? {
+        position: "fixed",
+        inset: 0,
+        zIndex: 9999,
+        overflowY: "auto",
+        padding: 18,
+        background: "#071827",
+      } : undefined}
+    >
       <div className="hotel-trend-header">
         <div>
           <h2>Hotel Performance</h2>
@@ -140,6 +168,17 @@ export default function HotelTrendSection({ selectedDate }: Props) {
             <RangeButton active={range === 14} onClick={() => selectPreset(14)}>14D</RangeButton>
             <RangeButton active={range === 30} onClick={() => selectPreset(30)}>30D</RangeButton>
           </div>
+
+          <button
+            type="button"
+            className="trend-range-button"
+            onClick={() => setFullscreen((value) => !value)}
+            title={fullscreen ? "Thoát toàn màn hình (Esc)" : "Xem toàn màn hình"}
+            aria-label={fullscreen ? "Thoát toàn màn hình" : "Xem toàn màn hình"}
+            style={{ width: 34, padding: 0, fontSize: 17, lineHeight: 1 }}
+          >
+            {fullscreen ? "×" : "⛶"}
+          </button>
         </div>
       </div>
 
