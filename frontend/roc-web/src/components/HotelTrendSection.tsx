@@ -15,10 +15,11 @@ type RangeDays = 7 | 14 | 30;
 const MAX_RANGE_DAYS = 365;
 const DEMO_FROM = "2026-01-01";
 const DEMO_TO = "2026-10-31";
+const DEFAULT_RANGE_DAYS: RangeDays = 30;
 
 export default function HotelTrendSection({ selectedDate: _selectedDate }: Props) {
-  const [range, setRange] = useState<RangeDays | null>(null);
-  const [dateFrom, setDateFrom] = useState(DEMO_FROM);
+  const [range, setRange] = useState<RangeDays | null>(DEFAULT_RANGE_DAYS);
+  const [dateFrom, setDateFrom] = useState(subtractDays(DEMO_TO, DEFAULT_RANGE_DAYS - 1));
   const [dateTo, setDateTo] = useState(DEMO_TO);
   const [data, setData] = useState<HotelTrendResponse[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -211,9 +212,6 @@ function generateDemoTrend(from: string, to: string): HotelTrendResponse[] {
     const seed = dateSeed(date);
     const dayOfWeek = date.getDay();
 
-    // Saturday remains a sell-out for the presentation. Other days use deterministic
-    // pseudo-random targets from 20-96%, then blend with the previous day so the
-    // series feels irregular without producing the repeated saw-tooth pattern.
     let occupancyPercent: number;
     if (dayOfWeek === 6) {
       occupancyPercent = 100;
@@ -232,7 +230,6 @@ function generateDemoTrend(from: string, to: string): HotelTrendResponse[] {
       ? totalRooms
       : Math.round(totalRooms * occupancyPercent / 100);
 
-    // Rate and ancillary revenue follow demand but retain independent variation.
     const demandLift = occupancyPercent / 100;
     const adrNoise = seededRange(seed + 31, -110000, 140000);
     const adr = Math.round(clamp(
