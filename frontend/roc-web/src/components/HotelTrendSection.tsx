@@ -30,11 +30,14 @@ export default function HotelTrendSection({ selectedDate: _selectedDate }: Props
 
   useEffect(() => {
     if (!fullscreen) return;
+
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") setFullscreen(false);
     };
+
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       document.body.style.overflow = previousOverflow;
@@ -50,15 +53,17 @@ export default function HotelTrendSection({ selectedDate: _selectedDate }: Props
   }
 
   function changeFrom(value: string) {
+    const validationError = validateDateRange(value, dateTo);
     setRange(null);
     setDateFrom(value);
-    setError(validateDateRange(value, dateTo));
+    setError(validationError);
   }
 
   function changeTo(value: string) {
+    const validationError = validateDateRange(dateFrom, value);
     setRange(null);
     setDateTo(value);
-    setError(validateDateRange(dateFrom, value));
+    setError(validationError);
   }
 
   return (
@@ -85,20 +90,48 @@ export default function HotelTrendSection({ selectedDate: _selectedDate }: Props
               fontSize: 10,
               fontWeight: 700,
               letterSpacing: ".04em",
-            }}>DEMO DATA</span>
+            }}>
+              DEMO DATA
+            </span>
           </div>
           <span>Dữ liệu mô phỏng phục vụ trình diễn · 01/01/2026 - 31/10/2026</span>
         </div>
 
-        <div className="trend-range-controls" style={{ display: "flex", alignItems: "flex-end", justifyContent: "flex-end", gap: 8, flexWrap: "wrap" }}>
-          <div className="trend-date-range" style={{ display: "flex", alignItems: "flex-end", gap: 6 }}>
+        <div
+          className="trend-range-controls"
+          style={{
+            display: "flex",
+            alignItems: "flex-end",
+            justifyContent: "flex-end",
+            gap: 8,
+            flexWrap: "wrap",
+          }}
+        >
+          <div
+            className="trend-date-range"
+            style={{ display: "flex", alignItems: "flex-end", gap: 6 }}
+          >
             <label style={{ display: "flex", flexDirection: "column", gap: 3 }}>
               <span style={{ margin: 0, fontSize: 8 }}>Từ ngày</span>
-              <input type="date" value={dateFrom} min={DEMO_FROM} max={dateTo || DEMO_TO} onChange={(e) => changeFrom(e.target.value)} style={dateInputStyle} />
+              <input
+                type="date"
+                value={dateFrom}
+                min={DEMO_FROM}
+                max={dateTo || DEMO_TO}
+                onChange={(e) => changeFrom(e.target.value)}
+                style={dateInputStyle}
+              />
             </label>
             <label style={{ display: "flex", flexDirection: "column", gap: 3 }}>
               <span style={{ margin: 0, fontSize: 8 }}>Đến ngày</span>
-              <input type="date" value={dateTo} min={dateFrom} max={minDate(DEMO_TO, addDays(dateFrom, MAX_RANGE_DAYS - 1))} onChange={(e) => changeTo(e.target.value)} style={dateInputStyle} />
+              <input
+                type="date"
+                value={dateTo}
+                min={dateFrom}
+                max={minDate(DEMO_TO, addDays(dateFrom, MAX_RANGE_DAYS - 1))}
+                onChange={(e) => changeTo(e.target.value)}
+                style={dateInputStyle}
+              />
             </label>
           </div>
 
@@ -108,7 +141,14 @@ export default function HotelTrendSection({ selectedDate: _selectedDate }: Props
             <RangeButton active={range === 30} onClick={() => selectPreset(30)}>30D</RangeButton>
           </div>
 
-          <button type="button" className="trend-range-button" onClick={() => setFullscreen((value) => !value)} title={fullscreen ? "Thoát toàn màn hình (Esc)" : "Xem toàn màn hình"} aria-label={fullscreen ? "Thoát toàn màn hình" : "Xem toàn màn hình"} style={{ width: 34, padding: 0, fontSize: 17, lineHeight: 1 }}>
+          <button
+            type="button"
+            className="trend-range-button"
+            onClick={() => setFullscreen((value) => !value)}
+            title={fullscreen ? "Thoát toàn màn hình (Esc)" : "Xem toàn màn hình"}
+            aria-label={fullscreen ? "Thoát toàn màn hình" : "Xem toàn màn hình"}
+            style={{ width: 34, padding: 0, fontSize: 17, lineHeight: 1 }}
+          >
             {fullscreen ? "×" : "⛶"}
           </button>
         </div>
@@ -141,39 +181,62 @@ const dateInputStyle = {
   fontSize: 10,
 } as const;
 
-function RangeButton({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
-  return <button type="button" className={`trend-range-button ${active ? "active" : ""}`} onClick={onClick}>{children}</button>;
+function RangeButton({ active, onClick, children }: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      className={`trend-range-button ${active ? "active" : ""}`}
+      onClick={onClick}
+    >
+      {children}
+    </button>
+  );
 }
 
 function generateDemoTrend(from: string, to: string): HotelTrendResponse[] {
-  if (validateDateRange(from, to)) return [];
+  const validationError = validateDateRange(from, to);
+  if (validationError) return [];
 
   const result: HotelTrendResponse[] = [];
   const start = parseDate(from);
   const end = parseDate(to);
-  const demoStart = parseDate(DEMO_FROM);
   const totalRooms = 84;
 
   for (let date = new Date(start); date <= end; date.setDate(date.getDate() + 1)) {
-    const index = Math.round((date.getTime() - demoStart.getTime()) / 86400000);
+    const yearStart = new Date(date.getFullYear(), 0, 1);
+    const dayOfYear = Math.floor((date.getTime() - yearStart.getTime()) / 86400000);
+    const dayOfWeek = date.getDay();
 
-    // Slow, continuous seasonal curves: no day-of-week spikes.
-    const annualWave = 7.5 * Math.sin((index - 18) / 27);
-    const mediumWave = 4.5 * Math.sin((index + 8) / 13.5);
-    const summerLift = 8 * Math.exp(-Math.pow((index - 185) / 62, 2));
-    const autumnLift = 5 * Math.exp(-Math.pow((index - 270) / 42, 2));
-    const occupancyPercent = clamp(68 + annualWave + mediumWave + summerLift + autumnLift, 52, 91);
-    const occupiedRooms = Math.round(totalRooms * occupancyPercent / 100);
+    // Slow seasonal movement keeps the demo readable over long date ranges.
+    const seasonalWave = 7 * Math.sin(dayOfYear / 21) + 4 * Math.sin(dayOfYear / 47);
+    const summerLift = date.getMonth() >= 4 && date.getMonth() <= 7 ? 6 : 0;
+    const baseOccupancy = clamp(67 + summerLift + seasonalWave, 55, 84);
 
-    const adr = Math.round(
-      1320000
-      + 125000 * Math.sin((index - 35) / 36)
-      + 70000 * Math.sin(index / 19)
-      + 180000 * Math.exp(-Math.pow((index - 190) / 70, 2))
-    );
+    // Build a smooth weekly ramp: weekdays rise gradually into Saturday's sell-out,
+    // then Sunday settles back toward the underlying seasonal level.
+    const saturdayLift = 100 - baseOccupancy;
+    const weeklyFactor = dayOfWeek === 0 ? 0.22 : dayOfWeek / 6;
+    const occupancyPercent = dayOfWeek === 6
+      ? 100
+      : clamp(baseOccupancy + saturdayLift * weeklyFactor, 55, 99);
+    const occupiedRooms = dayOfWeek === 6
+      ? totalRooms
+      : Math.round(totalRooms * occupancyPercent / 100);
+
+    const baseAdr = 1260000
+      + summerLift * 17000
+      + 90000 * Math.sin(dayOfYear / 35);
+    const saturdayRateLift = 260000 * weeklyFactor;
+    const adr = Math.round(baseAdr + saturdayRateLift);
     const revPar = Math.round(adr * occupancyPercent / 100);
     const roomNetRevenue = Math.round(occupiedRooms * adr);
-    const ancillaryFactor = 1.48 + 0.07 * Math.sin((index + 10) / 31);
+
+    // Ancillary spend also rises toward Saturday so revenue follows occupancy naturally.
+    const ancillaryFactor = 1.42 + 0.10 * weeklyFactor + 0.04 * Math.sin(dayOfYear / 29);
     const totalNetRevenue = Math.round(roomNetRevenue * ancillaryFactor);
 
     result.push({
@@ -192,31 +255,46 @@ function generateDemoTrend(from: string, to: string): HotelTrendResponse[] {
 
 function validateDateRange(from: string, to: string) {
   if (!from || !to) return "Vui lòng chọn đầy đủ Từ ngày và Đến ngày.";
+
   const fromDate = parseDate(from);
   const toDate = parseDate(to);
   if (toDate < fromDate) return "Đến ngày phải lớn hơn hoặc bằng Từ ngày.";
+
   const days = Math.floor((toDate.getTime() - fromDate.getTime()) / 86400000) + 1;
   if (days > MAX_RANGE_DAYS) return "Khoảng thời gian tối đa là 1 năm (365 ngày).";
+
   return null;
 }
 
-function parseDate(dateString: string) { return new Date(`${dateString}T00:00:00`); }
+function parseDate(dateString: string) {
+  return new Date(`${dateString}T00:00:00`);
+}
+
 function formatDate(date: Date) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
+
 function subtractDays(dateString: string, days: number) {
   const date = parseDate(dateString);
   date.setDate(date.getDate() - days);
   return formatDate(date);
 }
+
 function addDays(dateString: string, days: number) {
   if (!dateString) return undefined;
   const date = parseDate(dateString);
   date.setDate(date.getDate() + days);
   return formatDate(date);
 }
-function minDate(first: string, second?: string) { return !second || first < second ? first : second; }
-function clamp(value: number, min: number, max: number) { return Math.min(max, Math.max(min, value)); }
+
+function minDate(first: string, second?: string) {
+  if (!second) return first;
+  return first < second ? first : second;
+}
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
