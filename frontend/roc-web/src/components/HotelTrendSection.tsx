@@ -231,13 +231,23 @@ function generateDemoTrend(from: string, to: string): HotelTrendResponse[] {
       : Math.round(totalRooms * occupancyPercent / 100);
 
     const demandLift = occupancyPercent / 100;
-    const adrNoise = seededRange(seed + 31, -110000, 140000);
+
+    // Presentation-only ADR/RevPAR band: keep both metrics visually between 2M and 5M.
+    // Values are deterministic by date so refreshing the dashboard does not change them.
+    const adrNoise = seededRange(seed + 31, -420000, 520000);
     const adr = Math.round(clamp(
-      1080000 + demandLift * 520000 + adrNoise + (dayOfWeek === 6 ? 140000 : 0),
-      980000,
-      1850000
+      2350000 + demandLift * 2050000 + adrNoise + (dayOfWeek === 6 ? 500000 : 0),
+      2000000,
+      5000000
     ));
-    const revPar = Math.round(adr * occupancyPercent / 100);
+
+    const revParNoise = seededRange(seed + 47, -260000, 320000);
+    const revPar = Math.round(clamp(
+      2000000 + demandLift * 2450000 + revParNoise + (dayOfWeek === 6 ? 450000 : 0),
+      2000000,
+      5000000
+    ));
+
     const roomNetRevenue = Math.round(occupiedRooms * adr);
 
     const ancillaryFactor = clamp(
