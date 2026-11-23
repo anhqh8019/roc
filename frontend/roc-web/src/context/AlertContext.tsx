@@ -3,6 +3,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -13,6 +14,7 @@ import {
 } from "../api/alertApi";
 
 import { useBusinessDate } from "./BusinessDateContext";
+import { useAuth } from "../auth/AuthContext";
 
 interface AlertContextValue {
   unreadCount: number;
@@ -42,6 +44,8 @@ export function AlertProvider({
 }: AlertProviderProps) {
 
     const { businessDate } = useBusinessDate();
+    const { token } = useAuth();
+    const requestVersion = useRef(0);
 
   const [unreadCount, setUnreadCount] =
     useState(0);
@@ -53,8 +57,7 @@ export function AlertProvider({
   const refreshUnreadCount =
   useCallback(async () => {
 
-    const token =
-      localStorage.getItem("roc_access_token");
+    const version = ++requestVersion.current;
 
     if (!token) {
       setUnreadCount(0);
@@ -70,10 +73,13 @@ export function AlertProvider({
           businessDate
         );
 
-      setUnreadCount(count);
+      if (version === requestVersion.current) {
+        setUnreadCount(count);
+      }
 
     } catch (error) {
 
+      if (version !== requestVersion.current) return;
       console.error(
         "Load alert unread count error:",
         error
@@ -81,11 +87,11 @@ export function AlertProvider({
 
     } finally {
 
-      setLoading(false);
+      if (version === requestVersion.current) setLoading(false);
 
     }
 
-  }, [businessDate]);
+  }, [businessDate, token]);
 
 
   const markAlertRead =
@@ -108,6 +114,7 @@ export function AlertProvider({
   useEffect(() => {
 
     void refreshUnreadCount();
+    return () => { requestVersion.current += 1; };
 
   }, [refreshUnreadCount]);
 
