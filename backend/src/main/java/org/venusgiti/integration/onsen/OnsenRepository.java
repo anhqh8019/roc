@@ -24,26 +24,28 @@ public class OnsenRepository {
     public OnsenStats getDashboardStats(LocalDate businessDate) {
         String sql = """
                 SELECT
-                    COUNT(DISTINCT CASE
+                    COUNT(CASE
                         WHEN CheckInTime >= :startDate
                          AND CheckInTime < :endDate
                          AND CheckOutTime IS NULL
-                        THEN CardNo
+                        THEN 1
                     END) AS CurrentGuests,
 
-                    COUNT(DISTINCT CASE
+                    COUNT(CASE
                         WHEN CheckInTime >= :startDate
                          AND CheckInTime < :endDate
-                        THEN CardNo
+                        THEN 1
                     END) AS CheckIns,
 
-                    COUNT(DISTINCT CASE
+                    COUNT(CASE
                         WHEN CheckOutTime >= :startDate
                          AND CheckOutTime < :endDate
-                        THEN CardNo
+                        THEN 1
                     END) AS CheckOuts
                 FROM SMILE_ONSEN.dbo.AdditionalExt
                 WHERE ISNULL(IsCancel, 0) = 0
+                  AND CardNo IS NOT NULL
+                  AND LTRIM(RTRIM(CardNo)) <> ''
                 """;
 
         MapSqlParameterSource params =
@@ -85,22 +87,22 @@ public class OnsenRepository {
             pc.Description AS PackageName,
             pc.TrnSubCode,
 
-            COUNT(DISTINCT CASE
+            COUNT(CASE
                 WHEN ae.CheckInTime >= :startDate
                  AND ae.CheckInTime < :endDate
-                THEN ae.CardNo
+                THEN 1
             END) AS Guests,
 
-            COUNT(DISTINCT CASE
+            COUNT(CASE
                 WHEN ae.CheckInTime >= :startDate
                  AND ae.CheckInTime < :endDate
-                THEN ae.CardNo
+                THEN 1
             END) AS CheckIns,
 
-            COUNT(DISTINCT CASE
+            COUNT(CASE
                 WHEN ae.CheckOutTime >= :startDate
                  AND ae.CheckOutTime < :endDate
-                THEN ae.CardNo
+                THEN 1
             END) AS CheckOuts
 
         FROM SMILE_ONSEN.dbo.AdditionalExt ae
@@ -123,6 +125,8 @@ public class OnsenRepository {
 
             AND ISNULL(ae.IsCancel, 0) = 0
 
+            AND ae.CardNo IS NOT NULL
+            AND LTRIM(RTRIM(ae.CardNo)) <> ''
             AND ae.PkgCode IS NOT NULL
 
         GROUP BY
@@ -242,7 +246,7 @@ public class OnsenRepository {
         String sql = """
         SELECT
             CAST(ae.CheckInTime AS date) AS BusinessDate,
-            COUNT(DISTINCT ae.CardNo) AS Guests
+            COUNT(*) AS Guests
 
         FROM SMILE_ONSEN.dbo.AdditionalExt ae
 
